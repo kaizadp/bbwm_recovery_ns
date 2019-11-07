@@ -217,6 +217,7 @@ all %>%
 
 ggplot(temp,aes(x = date2, y = NO3, color = Watershed))+
   geom_point()+
+  geom_smooth()+
   ylim(0,15)+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
@@ -227,6 +228,61 @@ ggplot(temp,aes(x = date2, y = SO4, color = Watershed))+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+## fluxes
+
+### nitrate
+
+```{r}
+annual %>% 
+  dplyr::mutate(no3 = if_else(Watershed=="EB",-1*NO3,NO3),
+                so4 = if_else(Watershed=="EB",-1*SO4,as.numeric(SO4)),
+                no3_v = if_else(Watershed=="EB",-1*NO3_vol,NO3_vol),
+                so4_v = if_else(Watershed=="EB",-1*SO4_vol,SO4_vol),)->annual2
+
+    #  ggplot(annual2, aes(x = WY, y = no3, fill = Watershed))+
+    #    geom_bar(stat = "identity")+
+    #    geom_smooth(data=annual2,
+    #               aes(x = WY, y = NO3_vol, color = "grey"))+
+    #    scale_y_continuous(sec.axis = sec_axis(~./10, name = "Relative humidity [%]"))+
+    #    scale_fill_brewer(palette = "Set2")+
+    #    geom_vline(xintercept = 1989.5,linetype="dashed")+
+    #    geom_vline(xintercept = 2016.5,linetype="dashed")
+    #  
+    #  ggplot(annual2, aes(x = WY, y = so4, fill = Watershed))+
+    #    geom_bar(stat = "identity")+
+    #    scale_fill_brewer(palette = "Set2")+
+    #    geom_vline(xintercept = 1989.5,linetype="dashed")+
+    #    geom_vline(xintercept = 2016.5,linetype="dashed")
+```
+
+
+```{r}
+ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
+  geom_bar(aes(y = no3),stat = "identity")+
+  geom_line(aes(y = no3_v*10),color="black",size=0.6)+
+  geom_point(aes(y = no3_v*10))+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
+  ylab("flux")+
+  scale_fill_brewer(palette = "Dark2")+
+  geom_vline(xintercept = 1989.5,linetype="dashed")+
+  geom_vline(xintercept = 2016.5,linetype="dashed")+
+  theme_kp()
+
+
+ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
+  geom_bar(aes(y = so4),stat = "identity")+
+  geom_line(aes(y = so4_v*10),color="black",size=0.6)+
+  geom_point(aes(y = so4_v*10))+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
+  ylab("flux")+
+  scale_fill_brewer(palette = "Dark2")+
+  geom_vline(xintercept = 1989.5,linetype="dashed")+
+  geom_vline(xintercept = 2016.5,linetype="dashed")+
+  theme_kp()
+
 
 ```
 
