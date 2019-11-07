@@ -217,9 +217,10 @@ all %>%
 
 ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
-  geom_path(size=1)+
+#  geom_path(size=1)+
+ # geom_smooth(method = lm, formula = y ~ splines::bs(x, 40), se = FALSE)+
   scale_shape_manual(values = c(1,16))+
-  ylim(0,15)+
+  #ylim(0,15)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
@@ -272,7 +273,9 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   geom_point(aes(y = no3_v*10))+
   scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
   ylab("flux")+
-  scale_fill_brewer(palette = "Dark2")+
+  #scale_fill_brewer(palette = "Dark2")+
+  scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  geom_hline(yintercept = 0,size=0.3)+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
   annotate("text", label = "pre-treatment", x = 1988, y = 650, angle = 90,size=4, hjust = "right")+ 
@@ -281,12 +284,14 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
 
 
 ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
-  geom_bar(aes(y = so4),stat = "identity")+
+  geom_bar(aes(y = so4),stat = "identity", alpha = 0.9)+
   geom_line(aes(y = so4_v*10),color="black",size=0.6)+
   geom_point(aes(y = so4_v*10))+
   scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
   ylab("flux")+
   scale_fill_brewer(palette = "Dark2")+
+  #scale_fill_manual(values = c("#6f8ea9","#003b8f"))+
+  #scale_fill_manual(values = c("#d9d9d9","#D95F02"))+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
   annotate("text", label = "pre-treatment", x = 1988, y = 2500, angle = 90,size=4, hjust = "right")+ 
