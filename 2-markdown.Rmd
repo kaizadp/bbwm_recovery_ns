@@ -1,7 +1,7 @@
 ---
 title: "BBWM initial recovery"
 author: "Kaizad Patel"
-output: html_document
+output: github_document
 ---
 
 `r Sys.Date()`
