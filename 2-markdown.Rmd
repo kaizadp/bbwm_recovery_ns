@@ -215,16 +215,22 @@ all %>%
 
 
 
-ggplot(temp,aes(x = date2, y = NO3, color = Watershed))+
-  geom_point()+
-  geom_smooth()+
+ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
+  geom_point(size=2,stroke=1.5)+
+  geom_path(size=1)+
+  scale_shape_manual(values = c(1,16))+
   ylim(0,15)+
+  geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-ggplot(temp,aes(x = date2, y = SO4, color = Watershed))+
-  geom_point()+
+ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
+  geom_point(size=2,stroke=1.5)+
+  geom_path(size=1)+
+  scale_shape_manual(values = c(1,16))+
+  ylim(0,200)+
+  geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -269,6 +275,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   scale_fill_brewer(palette = "Dark2")+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = 1988, y = 650, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 650, angle = 90,size=4, hjust = "right")+ 
   theme_kp()
 
 
@@ -281,6 +289,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   scale_fill_brewer(palette = "Dark2")+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = 1988, y = 2500, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 2500, angle = 90,size=4, hjust = "right")+ 
   theme_kp()
 
 
