@@ -1,237 +1,84 @@
 ## BBWM stream recovery 
 ## stream chemistry 1989-2018
 
-# packages -------------------- # ----
+source("0-bbwm_packages.R")
 
-library(readxl)
-library(readr)
-library(tidyverse)
-library(dplyr)
-library(Rmisc)
-library(ggplot2)
-library(gameofthrones)
-library(data.table)
-library(cowplot)
-library(qwraps2)
-library(reshape2)
 
 #
-# files -------------------- # ----
-# importing files and cleaning up
-bbwm_annual = read_csv ("bbwm_annual.csv") ## fluxes
-bbwm_all = read_csv("bbwm_all.csv") ## concentrations
+# STEP 1: load files -------------------- # ----
+bbwm_annual = read.csv ("data/bbwm_annual.csv") ## fluxes
+bbwm_all = read_csv("data/bbwm_all.csv") ## concentrations
 
-# ANNUAL # creating subset with select columns
-annual = bbwm_annual %>%
-  select(WY,Watershed,Area,H2O,DOC,NO3,SO4,ANC,`Discharge L/s`,EQPH)
+# STEP 2: process annual flux data ----
+# create subset with select columns
+bbwm_annual %>%
+  dplyr::select(WY,Watershed,Area,H2O,DOC,NO3,SO4,ANC,`Discharge.L.s`,EQPH) %>% 
+  dplyr::rename(Q = `Discharge.L.s`) %>% 
+  dplyr::mutate(Watershed = factor(Watershed, levels = c("EB","WB")),
+# create columns to group by year/period
+                WY_group = case_when(WY <1990 ~"1989",
+                                     (WY>1989 & WY <2000) ~ "1990-99",
+                                     (WY>1999 & WY <2010) ~ "2000-09",
+                                     (WY>2009 & WY <2017) ~ "2010-16",
+                                     (WY>2016) ~ "2017-18"),
+                period = case_when(WY<1990 ~ "pre-treatment",
+                                   (WY>1989 & WY <2000)~ "first decade",
+                                   (WY>1999 & WY <2010)~ "second decade",
+                                   (WY>2009 & WY <2017)~ "third decade",
+                                   (WY>2016)~ "recovery"),
+                WY_group = factor(WY_group,
+                                  levels=c("1989","1990-99","2000-09","2010-16","2017-18")),
+                period = factor(period,
+                                levels=c("pre-treatment","first decade","second decade","third decade","recovery")),
+# create columns for volume-weighted
+                NO3_vol = round(NO3/(H2O/Area),2),
+                SO4_vol = round(SO4/(H2O/Area),2),
+                DOC_vol = round(DOC/(H2O/Area),2))->
+  annual
 
-annual$Watershed = factor(annual$Watershed,
-                          levels = c("EB","WB"))
-annual$Q = (annual$`Discharge L/s`)
 
-# ANNUAL # creating column for time period
-setDT(annual)[WY <1990, WY_group := "1989"]
-annual[WY>1989 & WY <2000, WY_group := "1990-99"]
-annual[WY>1999 & WY <2010, WY_group := "2000-09"]
-annual[WY>2009 & WY <2017, WY_group := "2010-16"]
-annual[WY>2016, WY_group := "2017-18"]
-annual$WY_group=
-  factor(annual$WY_group,
-         levels=c("1989","1990-99","2000-09","2010-16","2017-18"))
+# STEP 3: process concentrations dataset ----
 
-
-# ANNUAL # creating column2 for time period
-setDT(annual)[WY <1990, period := "pre-treatment"]
-annual[WY>1989 & WY <2000, period := "first decade"]
-annual[WY>1999 & WY <2010, period := "second decade"]
-annual[WY>2009 & WY <2017, period := "third decade"]
-annual[WY>2016, period := "recovery"]
-annual$period=
-  factor(annual$period,
-         levels=c("pre-treatment","first decade","second decade","third decade","recovery"))
-
-# ANNUAL # creating columns for volume weighted values
-
-annual$NO3_vol = round(annual$NO3/(annual$H2O/annual$Area),2)
-annual$SO4_vol = round(annual$SO4/(annual$H2O/annual$Area),2)
-annual$DOC_vol = round(annual$DOC/(annual$H2O/annual$Area),2)
-
-# ALL # creating subset with select columns
-all = bbwm_all %>%
-  select(Watershed,Year,WY,Month,Day,`NO3 (ueq/L)`,
+# create subset with select columns
+bbwm_all %>%
+  dplyr::select(Watershed,Year,WY,Month,Day,`NO3 (ueq/L)`,
          `SO4 (ueq/L)`,`DOC (mg/L)`,`Discharge (L/sec)`,`Specific Conductance (us/cm)`,`ANC (ueq/L)`) %>%
-  filter(Watershed %in% c("EB","WB"))
-
-# ALL # renaming columns
-all = dplyr::rename(all,NO3 = `NO3 (ueq/L)`)
-all = dplyr::rename(all,SO4 = `SO4 (ueq/L)`)
-all = dplyr::rename(all,DOC = `DOC (mg/L)`)
-all = dplyr::rename(all,Q = `Discharge (L/sec)`)
-all = dplyr::rename(all,ANC = `ANC (ueq/L)`)
-
-# create date column
-all$dates <- as.Date(with(all, paste(Year, Month, Day,sep="-")), "%Y-%m-%d")
+  dplyr::filter(Watershed %in% c("EB","WB")) %>% 
+  dplyr::rename(NO3 = `NO3 (ueq/L)`,
+              SO4 = `SO4 (ueq/L)`,
+              DOC = `DOC (mg/L)`,
+              Q = `Discharge (L/sec)`,
+              ANC = `ANC (ueq/L)`) %>% 
+  dplyr::mutate(dates = as.Date(paste(Year, Month, Day,sep="-")))->
+  all
 
 
-# remove NA
-annual = annual[complete.cases(annual),]
-
-# exporting ALL and ANNUAL
-write.csv(all,"all.csv")
-write.csv(annual,"annual.csv")
-
-#
-#
-# ggplots -------------------- # ----
-# ggplots
-
-#nitrate
-annual_nit = ggplot (na.omit(annual), 
-                     aes(x = WY, y = NO3_vol,color = Watershed,fill=Watershed,shape = Watershed,linetype=Watershed))+
-  geom_point(data=all,
-             aes(x = WY, y = NO3, color = "grey"))+
-  geom_smooth(alpha = 0.2)+
-  geom_point(size=3,stroke=1.5)+
-  scale_color_got(discrete=TRUE,option = "tully")+
-  scale_fill_got(discrete=TRUE,option = "tully")+
-  scale_shape_manual(values = c(4,19))+
-  
-  geom_vline(xintercept = 1989.2,linetype="dashed")+
-  geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 80, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 80, angle = 90,size=4, hjust = "right")+ 
-  
-  labs (y = expression (bold ("NO"[3]^-{}* " ("*mu*"eq L"^-1*")")),
-        x = expression (bold ("WY")))+
-
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_nit
-
-#sulfate
-annual_sulf = ggplot (na.omit(annual), 
-                      aes(x = WY, y = SO4_vol,color = Watershed,fill=Watershed,shape = Watershed,linetype=Watershed))+
-  geom_point(data=all,
-             aes(x = WY, y = SO4, color = "grey"))+
-  geom_smooth(alpha = 0.2)+
-  geom_point(size=3,stroke=1.5)+
-  scale_color_got(discrete=TRUE,option = "tully")+
-  scale_fill_got(discrete=TRUE,option = "tully")+
-  scale_shape_manual(values = c(4,19))+
-  
-  geom_vline(xintercept = 1989.2,linetype="dashed")+
-  geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 200, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 200, angle = 90,size=4, hjust = "right")+ 
-  
-  labs (y = expression (bold ("SO"[4]^-2* " ("*mu*"eq L"^-1*")")),
-        x = expression (bold ("WY")))+
-  
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_sulf
-
-#DOC
-annual_DOC=ggplot (na.omit(annual), aes(x = WY, y = DOC_vol,color = Watershed,shape = Watershed,linetype=Watershed))+
-  geom_point(data=all,
-             aes(x = WY, y = DOC, color = "grey"))+
-  geom_smooth(color = "grey",alpha = 0.2)+
-  geom_point(size=3,stroke=1.5)+
-  scale_color_got(discrete=TRUE,option = "tully")+
-  scale_shape_manual(values = c(1,19))+
-  
-  geom_vline(xintercept = 1989.2,linetype="dashed")+
-  geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 250, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 250, angle = 90,size=4, hjust = "right")+ 
-  
-  labs (y = expression (bold ("DOC ("*mu*"mol L"^-1*")")),
-        x = expression (bold ("WY")))+
-  
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black"));annual_DOC
-
-#ANC
-annual_anc = ggplot (na.omit(annual), 
-                     aes(x = WY, y = ANC,color = Watershed,shape = Watershed,linetype=Watershed))+
-   geom_smooth(color = "grey",alpha = 0.2)+
-  geom_point(size=3,stroke=1.5)+
-  scale_color_got(discrete=TRUE,option = "tully")+
-  scale_shape_manual(values = c(1,19))+
-  
-  geom_vline(xintercept = 1989.2,linetype="dashed")+
-  geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 200, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 200, angle = 90,size=4, hjust = "right")+ 
-  
-  labs (y = expression (bold ("ANC"),
-                        x = expression (bold ("WY"))))+
-  
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_anc
-
-#pH
-annual_pH = ggplot (na.omit(annual), aes(x = WY, y = EQPH,color = Watershed,shape = Watershed,linetype=Watershed))+
-  geom_smooth(color = "grey",alpha = 0.2)+
-  geom_point(size=3,stroke=1.5)+
-  scale_color_got(discrete=TRUE,option = "tully")+
-  scale_shape_manual(values = c(1,19))+
-  
-  geom_vline(xintercept = 1989.2,linetype="dashed")+
-  geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 7, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 7, angle = 90,size=4, hjust = "right")+ 
-  
-  labs (y = expression (bold ("Air-equilibrated pH"),
-                        x = expression (bold ("WY"))))+
-
-  theme_bw()+
-  theme (legend.position = c(0.2,0.8))+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_pH
-
-plot_grid(annual_nit,annual_sulf, annual_DOC, annual_anc,
-          ncol=2,nrow=2,align="hv")
 
 
-# annual flux summary table -------------------- # ----
-# creating summary table
+# STEP 4: annual flux summary table -------------------- # ----
+
+annual %>% 
+  dplyr::select(Watershed,period,NO3,SO4) %>% 
+  gather(species,flux,NO3:SO4) %>% 
+  group_by(Watershed,period,species) %>% 
+  dplyr::summarise(mean = mean(flux),
+                   se = sd(flux)/sqrt(n())) %>% 
+  dplyr::mutate(summary = paste(round(mean,2),"\u00B1",round(se,2)))->summary
+
+# STEP 5: exporting ALL and ANNUAL ----
+write.csv(all,"processed/concentrations.csv", row.names = FALSE)
+write.csv(annual,"processed/fluxes.csv", row.names = FALSE)
+write.csv(summary,"processed/summary.csv", row.names = FALSE)
+
+################################
+################################
+
+
+
+
+  )
+  melt(id = c("Watershed","period"), measure) %>% 
+
 
 annual_melt = melt(annual, 
                    id.vars = c("Watershed", "period"),
