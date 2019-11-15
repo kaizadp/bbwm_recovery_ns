@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE,
                       )
 
 source("0-bbwm_packages.R")
+source("1-bbwm_recovery_ns_Rcode.R")
+make(plan)
 
 all = read.csv("processed/concentrations.csv")
 annual = read.csv("processed/fluxes.csv")
@@ -228,7 +230,7 @@ ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
 
 ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
-  geom_path(size=1)+
+ # geom_path(size=1)+
   scale_shape_manual(values = c(1,16))+
   ylim(0,200)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
