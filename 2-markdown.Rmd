@@ -58,7 +58,7 @@ ggplot (na.omit(annual),
 
 ```{r}
 
-annual_sulf = ggplot (na.omit(annual), 
+ggplot (na.omit(annual), 
                       aes(x = WY, y = SO4_vol,color = Watershed,fill=Watershed,shape = Watershed,linetype=Watershed))+
   geom_point(data=all,
              aes(x = WY, y = SO4, color = "grey"))+
@@ -76,16 +76,8 @@ annual_sulf = ggplot (na.omit(annual),
   labs (y = expression (bold ("SO"[4]^-2* " ("*mu*"eq L"^-1*")")),
         x = expression (bold ("WY")))+
   
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_sulf
+  theme_kp()+
+  theme (legend.position = "none")
 ```
 
 
@@ -96,7 +88,7 @@ annual_sulf = ggplot (na.omit(annual),
 ```{r}
 
 
-annual_DOC=ggplot (na.omit(annual), aes(x = WY, y = DOC_vol,color = Watershed,shape = Watershed,linetype=Watershed))+
+ggplot (na.omit(annual), aes(x = WY, y = DOC_vol,color = Watershed,shape = Watershed,linetype=Watershed))+
   geom_point(data=all,
              aes(x = WY, y = DOC, color = "grey"))+
   geom_smooth(color = "grey",alpha = 0.2)+
@@ -112,16 +104,8 @@ annual_DOC=ggplot (na.omit(annual), aes(x = WY, y = DOC_vol,color = Watershed,sh
   labs (y = expression (bold ("DOC ("*mu*"mol L"^-1*")")),
         x = expression (bold ("WY")))+
   
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black"));annual_DOC
+  theme_kp()+
+  theme (legend.position = "none")
 ```
 
 
@@ -131,9 +115,7 @@ annual_DOC=ggplot (na.omit(annual), aes(x = WY, y = DOC_vol,color = Watershed,sh
 
 ```{r}
 
-
-
-annual_anc = ggplot (na.omit(annual), 
+ggplot (na.omit(annual), 
                      aes(x = WY, y = ANC,color = Watershed,shape = Watershed,linetype=Watershed))+
    geom_smooth(color = "grey",alpha = 0.2)+
   geom_point(size=3,stroke=1.5)+
@@ -148,16 +130,8 @@ annual_anc = ggplot (na.omit(annual),
   labs (y = expression (bold ("ANC"),
                         x = expression (bold ("WY"))))+
   
-  theme_bw()+
-  theme (legend.position = "none")+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_anc
+  theme_kp()+
+  theme (legend.position = "none")
 ```
 
 
@@ -168,7 +142,7 @@ annual_anc = ggplot (na.omit(annual),
 ```{r}
 
 
-annual_pH = ggplot (na.omit(annual), aes(x = WY, y = EQPH,color = Watershed,shape = Watershed,linetype=Watershed))+
+ggplot (na.omit(annual), aes(x = WY, y = EQPH,color = Watershed,shape = Watershed,linetype=Watershed))+
   geom_smooth(color = "grey",alpha = 0.2)+
   geom_point(size=3,stroke=1.5)+
   scale_color_got(discrete=TRUE,option = "tully")+
@@ -182,16 +156,8 @@ annual_pH = ggplot (na.omit(annual), aes(x = WY, y = EQPH,color = Watershed,shap
   labs (y = expression (bold ("Air-equilibrated pH"),
                         x = expression (bold ("WY"))))+
 
-  theme_bw()+
-  theme (legend.position = c(0.2,0.8))+
-  theme (legend.key = element_rect(size = 3))+
-  theme (legend.title = element_blank())+
-  theme (legend.text=element_text(size=14))+
-  theme (legend.key = element_rect(size = 5),
-         legend.key.size = unit(2, 'lines'))+
-  theme (plot.title = element_text(hjust = 0.05,size = 14))+
-  theme (axis.text=element_text(size=14,face="bold",color="black"),
-         axis.title=element_text(size=14,face="bold",color="black")); annual_pH
+  theme_kp()+
+  theme (legend.position = "none")
 
 
 ```
@@ -277,6 +243,7 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   ylab("flux")+
   #scale_fill_brewer(palette = "Dark2")+
   scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  scale_shape_manual(values = c(1,19))+
   geom_hline(yintercept = 0,size=0.3)+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
@@ -291,7 +258,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   geom_point(aes(y = so4_v*10))+
   scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
   ylab("flux")+
-  scale_fill_brewer(palette = "Dark2")+
+  scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  scale_shape_manual(values = c(1,19))+
   #scale_fill_manual(values = c("#6f8ea9","#003b8f"))+
   #scale_fill_manual(values = c("#d9d9d9","#D95F02"))+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
