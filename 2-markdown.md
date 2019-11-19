@@ -2,7 +2,7 @@ BBWM initial recovery
 ================
 Kaizad Patel
 
-2019-11-14
+2019-11-19
 
 ## nitrate
 
@@ -24,7 +24,7 @@ Kaizad Patel
 
 ![](images/unnamed-chunk-4-1.png)<!-- -->
 
-# summary table
+# summary table – fluxes
 
 | species | Watershed | pre-treatment |    first decade |   second decade |     third decade |       recovery |
 | ------: | --------: | ------------: | --------------: | --------------: | ---------------: | -------------: |

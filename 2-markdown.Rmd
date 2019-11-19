@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo=FALSE,message=FALSE,warning=FALSE,
 source("0-bbwm_packages.R")
 source("1-bbwm_recovery_ns_Rcode.R")
 make(plan)
+library(harrypotter)
 
 all = read.csv("processed/concentrations.csv")
 annual = read.csv("processed/fluxes.csv")
@@ -165,7 +166,7 @@ ggplot (na.omit(annual), aes(x = WY, y = EQPH,color = Watershed,shape = Watershe
 
 
 
-# summary table
+# summary table -- fluxes
 
 ```{r}
 summary %>% 
@@ -187,6 +188,7 @@ ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
 #  geom_path(size=1)+
  # geom_smooth(method = lm, formula = y ~ splines::bs(x, 40), se = FALSE)+
+  scale_color_hp(discrete=TRUE,option ="Gryffindor")+
   scale_shape_manual(values = c(1,16))+
   #ylim(0,15)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
@@ -197,6 +199,7 @@ ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
 ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
  # geom_path(size=1)+
+  scale_color_hp(discrete=TRUE,option ="Slytherin")+
   scale_shape_manual(values = c(1,16))+
   ylim(0,200)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
@@ -236,13 +239,14 @@ annual %>%
 
 ```{r}
 ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
-  geom_bar(aes(y = no3),stat = "identity")+
+  geom_bar(aes(y = no3),stat = "identity", alpha = 0.8)+
   geom_line(aes(y = no3_v*10),color="black",size=0.6)+
-  geom_point(aes(y = no3_v*10))+
+  geom_point(aes(y = no3_v*10), size=1.5, stroke=1)+
   scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
   ylab("flux")+
   #scale_fill_brewer(palette = "Dark2")+
-  scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  #scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  scale_fill_hp(discrete=TRUE,option ="Gryffindor")+
   scale_shape_manual(values = c(1,19))+
   geom_hline(yintercept = 0,size=0.3)+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
@@ -255,10 +259,11 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
 ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   geom_bar(aes(y = so4),stat = "identity", alpha = 0.9)+
   geom_line(aes(y = so4_v*10),color="black",size=0.6)+
-  geom_point(aes(y = so4_v*10))+
+  geom_point(aes(y = so4_v*10), size=1.5, stroke=1)+
   scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
   ylab("flux")+
-  scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  #scale_fill_manual(values = c("#bebebe","darkgreen"))+
+  scale_fill_hp(discrete=TRUE,option ="Slytherin")+
   scale_shape_manual(values = c(1,19))+
   #scale_fill_manual(values = c("#6f8ea9","#003b8f"))+
   #scale_fill_manual(values = c("#d9d9d9","#D95F02"))+
