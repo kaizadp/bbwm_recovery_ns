@@ -33,10 +33,10 @@ Kaizad Patel
 |     SO4 |        EB |     1014 ± NA |   870.7 ± 51.51 |    807.8 ± 58.6 |   642.14 ± 57.05 |   553.5 ± 15.5 |
 |     SO4 |        WB |     1177 ± NA | 1655.9 ± 134.09 | 1801.7 ± 143.94 | 1620.14 ± 118.98 | 1472.5 ± 125.5 |
 
-![](images/unnamed-chunk-6-1.png)<!-- -->![](images/unnamed-chunk-6-2.png)<!-- -->
+![](images/concentrations-1.png)<!-- -->![](images/concentrations-2.png)<!-- -->
 
 ## fluxes
 
 ### nitrate
 
-![](images/unnamed-chunk-8-1.png)<!-- -->![](images/unnamed-chunk-8-2.png)<!-- -->
+![](images/fluxes2-1.png)<!-- -->![](images/fluxes2-2.png)<!-- -->

@@ -177,7 +177,7 @@ summary %>%
 ```
 
 
-```{r}
+```{r concentrations}
 all %>% 
   dplyr::filter(Year>2015) %>% 
   dplyr::mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-")))->temp
@@ -190,8 +190,9 @@ ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
  # geom_smooth(method = lm, formula = y ~ splines::bs(x, 40), se = FALSE)+
   scale_color_hp(discrete=TRUE,option ="Gryffindor")+
   scale_shape_manual(values = c(1,16))+
-  #ylim(0,15)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
+  xlab("")+
+  ylab("NO3, ueq/L")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -203,6 +204,8 @@ ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
   scale_shape_manual(values = c(1,16))+
   ylim(0,200)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
+  xlab("")+
+  ylab(" SO4, ueq/L")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -213,7 +216,7 @@ ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
 
 ### nitrate
 
-```{r}
+```{r fluxes}
 annual %>% 
   dplyr::mutate(no3 = if_else(Watershed=="EB",-1*NO3,NO3),
                 so4 = if_else(Watershed=="EB",-1*SO4,as.numeric(SO4)),
@@ -237,13 +240,13 @@ annual %>%
 ```
 
 
-```{r}
+```{r fluxes2}
 ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   geom_bar(aes(y = no3),stat = "identity", alpha = 0.8)+
   geom_line(aes(y = no3_v*10),color="black",size=0.6)+
   geom_point(aes(y = no3_v*10), size=1.5, stroke=1)+
-  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
-  ylab("flux")+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc ueq/L"))+
+  ylab("NO3 flux, ueq/ha/yr")+
   #scale_fill_brewer(palette = "Dark2")+
   #scale_fill_manual(values = c("#bebebe","#D95F02"))+
   scale_fill_hp(discrete=TRUE,option ="Gryffindor")+
@@ -260,8 +263,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   geom_bar(aes(y = so4),stat = "identity", alpha = 0.9)+
   geom_line(aes(y = so4_v*10),color="black",size=0.6)+
   geom_point(aes(y = so4_v*10), size=1.5, stroke=1)+
-  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc"))+
-  ylab("flux")+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc, ueq/L"))+
+  ylab("SO4 flux, ueq/ha/yr")+
   #scale_fill_manual(values = c("#bebebe","darkgreen"))+
   scale_fill_hp(discrete=TRUE,option ="Slytherin")+
   scale_shape_manual(values = c(1,19))+
