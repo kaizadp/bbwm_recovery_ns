@@ -21,7 +21,7 @@ library(harrypotter)
 all = read.csv("processed/concentrations.csv")
 annual = read.csv("processed/fluxes.csv")
 summary = read.csv("processed/summary.csv")
-
+deposition = read.csv("processed/deposition.csv")
 ```
 
 
@@ -184,7 +184,7 @@ all %>%
 
 
 
-ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
+ggplot(temp,aes(x = date2, y = NO3_N, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
 #  geom_path(size=1)+
  # geom_smooth(method = lm, formula = y ~ splines::bs(x, 40), se = FALSE)+
@@ -192,34 +192,33 @@ ggplot(temp,aes(x = date2, y = NO3, color = Watershed,shape=Watershed))+
   scale_shape_manual(values = c(1,16))+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   xlab("")+
-  ylab("NO3, ueq/L")+
+  ylab("NO3-N, kg/L")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-ggplot(temp,aes(x = date2, y = SO4, color = Watershed,shape=Watershed))+
+ggplot(temp,aes(x = date2, y = SO4_S, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
  # geom_path(size=1)+
   scale_color_hp(discrete=TRUE,option ="Slytherin")+
   scale_shape_manual(values = c(1,16))+
-  ylim(0,200)+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   xlab("")+
-  ylab(" SO4, ueq/L")+
+  ylab("SO4-S, kg/L")+
   theme_kp()+
   scale_x_date(date_breaks = "4 months", date_labels =  "%b %Y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
 
-## fluxes
+# fluxes
 
 ### nitrate
 
 ```{r fluxes}
 annual %>% 
-  dplyr::mutate(no3 = if_else(Watershed=="EB",-1*NO3,NO3),
-                so4 = if_else(Watershed=="EB",-1*SO4,as.numeric(SO4)),
+  dplyr::mutate(no3 = if_else(Watershed=="EB",-1*NO3_N,NO3_N),
+                so4 = if_else(Watershed=="EB",-1*SO4_S,as.numeric(SO4_S)),
                 no3_v = if_else(Watershed=="EB",-1*NO3_vol,NO3_vol),
                 so4_v = if_else(Watershed=="EB",-1*SO4_vol,SO4_vol),)->annual2
 
@@ -245,8 +244,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   geom_bar(aes(y = no3),stat = "identity", alpha = 0.8)+
   geom_line(aes(y = no3_v*10),color="black",size=0.6)+
   geom_point(aes(y = no3_v*10), size=1.5, stroke=1)+
-  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc ueq/L"))+
-  ylab("NO3 flux, ueq/ha/yr")+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc kg/L"))+
+  ylab("NO3-N flux, kg/ha/yr")+
   #scale_fill_brewer(palette = "Dark2")+
   #scale_fill_manual(values = c("#bebebe","#D95F02"))+
   scale_fill_hp(discrete=TRUE,option ="Gryffindor")+
@@ -254,8 +253,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   geom_hline(yintercept = 0,size=0.3)+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 650, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 650, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "pre-treatment", x = 1988, y = 10, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 10, angle = 90,size=4, hjust = "right")+ 
   theme_kp()
 
 
@@ -263,8 +262,8 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   geom_bar(aes(y = so4),stat = "identity", alpha = 0.9)+
   geom_line(aes(y = so4_v*10),color="black",size=0.6)+
   geom_point(aes(y = so4_v*10), size=1.5, stroke=1)+
-  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc, ueq/L"))+
-  ylab("SO4 flux, ueq/ha/yr")+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = "conc, kg/L"))+
+  ylab("SO4-S flux, kg/ha/yr")+
   #scale_fill_manual(values = c("#bebebe","darkgreen"))+
   scale_fill_hp(discrete=TRUE,option ="Slytherin")+
   scale_shape_manual(values = c(1,19))+
@@ -272,10 +271,36 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
   #scale_fill_manual(values = c("#d9d9d9","#D95F02"))+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
   geom_vline(xintercept = 2016.5,linetype="dashed")+
-  annotate("text", label = "pre-treatment", x = 1988, y = 2500, angle = 90,size=4, hjust = "right")+ 
-  annotate("text", label = "recovery", x = 2017.5, y = 2500, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "pre-treatment", x = 1988, y = 40, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 40, angle = 90,size=4, hjust = "right")+ 
   theme_kp()
 
 
+```
+
+# deposition 
+
+```{r, fig.asp=1, fig.dim=3}
+deposition %>% 
+  dplyr::mutate(S_WB = case_when(YEAR==1988~S_bb,
+                                 YEAR>1988&YEAR<2017~S_bb+25,
+                                 YEAR>2016~S_bb))->deposition
+
+ggplot(deposition, aes(x = YEAR, y = S_bb))+
+  geom_path()+
+  geom_point(aes(shape=data_type), size=2, stroke=1)+
+ # geom_path(aes(x = YEAR,y = (S_WB)),color = "red")+
+  scale_shape_manual(values = c(1,19))+
+  ylim(0,7)+
+  ylab(expression(bold("S, kg ha"^-1*" yr"^-1)))+
+  theme_kp()
+
+ggplot(deposition, aes(x = YEAR, y = N_bb))+
+  geom_path()+
+  geom_point(aes(shape=data_type), size=2, stroke=1)+
+  scale_shape_manual(values = c(1,19))+
+  ylim(0,7)+
+  ylab(expression(bold("N, kg ha"^-1*" yr"^-1)))+
+  theme_kp()
 ```
 

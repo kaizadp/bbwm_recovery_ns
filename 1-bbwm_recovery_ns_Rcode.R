@@ -31,9 +31,12 @@ annual =
                                   levels=c("1989","1990-99","2000-09","2010-16","2017-18")),
                 period = factor(period,
                                 levels=c("pre-treatment","first decade","second decade","third decade","recovery")),
+# convert ueq to kg
+                NO3_N = NO3*14/1000,
+                SO4_S = SO4*32/(2*1000),
 # create columns for volume-weighted
-                NO3_vol = round(NO3/(H2O/Area),2),
-                SO4_vol = round(SO4/(H2O/Area),2),
+                NO3_vol = round(NO3_N/(H2O/Area),2),
+                SO4_vol = round(SO4_S/(H2O/Area),2),
                 DOC_vol = round(DOC/(H2O/Area),2)),
 
 
@@ -50,6 +53,8 @@ all =
               DOC = `DOC (mg/L)`,
               Q = `Discharge (L/sec)`,
               ANC = `ANC (ueq/L)`) %>% 
+  dplyr::mutate(NO3_N = NO3*14/1000,
+                SO4_S = SO4*32/(2*1000)) %>% 
   dplyr::mutate(dates = as.Date(paste(Year, Month, Day,sep="-"))),
 
 
@@ -58,9 +63,9 @@ all =
 # STEP 4: annual flux summary table -------------------- # ----
 
 summary = annual %>% 
-  dplyr::select(Watershed,period,NO3,SO4) %>% 
+  dplyr::select(Watershed,period,NO3_N,SO4_S) %>% 
   #gather(species,flux,NO3:SO4) %>% 
-  melt(measure.vars = c("NO3","SO4"),value.name = "flux") %>% 
+  melt(measure.vars = c("NO3_N","SO4_S"),value.name = "flux") %>% 
   dplyr::rename(species = variable) %>% 
   group_by(Watershed,period,species) %>% 
   dplyr::summarise(mean = mean(flux),
@@ -73,6 +78,7 @@ write.csv(annual,"processed/fluxes.csv", row.names = FALSE),
 write.csv(summary,"processed/summary.csv", row.names = FALSE)
 
 )
+
 
 ################################
 ################################

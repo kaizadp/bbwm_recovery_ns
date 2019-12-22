@@ -2,7 +2,7 @@ BBWM initial recovery
 ================
 Kaizad Patel
 
-2019-11-19
+2019-12-20
 
 ## nitrate
 
@@ -26,17 +26,21 @@ Kaizad Patel
 
 # summary table – fluxes
 
-| species | Watershed | pre-treatment |    first decade |   second decade |     third decade |       recovery |
-| ------: | --------: | ------------: | --------------: | --------------: | ---------------: | -------------: |
-|     NO3 |        EB |    182.8 ± NA |   43.38 ± 14.61 |     8.04 ± 1.76 |       4.89 ± 1.6 |    2.85 ± 0.95 |
-|     NO3 |        WB |      216 ± NA |   423.6 ± 41.96 |   345.7 ± 50.03 |   420.43 ± 30.24 |    59.5 ± 33.5 |
-|     SO4 |        EB |     1014 ± NA |   870.7 ± 51.51 |    807.8 ± 58.6 |   642.14 ± 57.05 |   553.5 ± 15.5 |
-|     SO4 |        WB |     1177 ± NA | 1655.9 ± 134.09 | 1801.7 ± 143.94 | 1620.14 ± 118.98 | 1472.5 ± 125.5 |
+| species | Watershed | pre-treatment | first decade | second decade | third decade |     recovery |
+| ------: | --------: | ------------: | -----------: | ------------: | -----------: | -----------: |
+|  NO3\_N |        EB |     2.56 ± NA |   0.61 ± 0.2 |   0.11 ± 0.02 |  0.07 ± 0.02 |  0.04 ± 0.01 |
+|  NO3\_N |        WB |     3.02 ± NA |  5.93 ± 0.59 |    4.84 ± 0.7 |  5.89 ± 0.42 |  0.83 ± 0.47 |
+|  SO4\_S |        EB |    16.22 ± NA | 13.93 ± 0.82 |  12.92 ± 0.94 | 10.27 ± 0.91 |  8.86 ± 0.25 |
+|  SO4\_S |        WB |    18.83 ± NA | 26.49 ± 2.15 |   28.83 ± 2.3 |  25.92 ± 1.9 | 23.56 ± 2.01 |
 
 ![](images/concentrations-1.png)<!-- -->![](images/concentrations-2.png)<!-- -->
 
-## fluxes
+# fluxes
 
 ### nitrate
 
 ![](images/fluxes2-1.png)<!-- -->![](images/fluxes2-2.png)<!-- -->
+
+## deposition
+
+![](images/unnamed-chunk-6-1.png)<!-- -->![](images/unnamed-chunk-6-2.png)<!-- -->
