@@ -4,7 +4,7 @@ source("0-bbwm_packages.R")
 
 bbwm_dep = read.csv("data/dep_bbwm_annual.csv")
 how_dep = read.csv("data/dep_how_annual.csv")
-
+gville_dep_seasonal = read.csv("data/dep_gville_seasonal.csv")
 
 bbwm_dep %>% 
   dplyr::rename(YEAR = CalYear) %>% 
@@ -117,3 +117,128 @@ ggplot(bbwm_dep_processed, aes(x = YEAR, y = N_bb))+
   theme_kp()
 
 
+
+#
+## using greenville data ----
+gville_dep_seasonal %>% 
+  dplyr::mutate(YEAR = if_else(seas=="Fall",as.integer(yr+1),yr)) %>%
+  filter(NO3>0) %>% 
+  group_by(YEAR) %>% 
+  dplyr::summarize(NO3_kgha = sum(NO3),
+                   SO4_kgha = sum(SO4)) %>% 
+  filter(YEAR>1987&YEAR<2019) %>% 
+  ungroup %>% 
+  dplyr::mutate(N_greenv = round(NO3_kgha*14/62,2),
+                S_greenv = round(SO4_kgha*32/96,2)) %>% 
+  dplyr::select(YEAR, N_greenv, S_greenv)->gville_dep_annual
+
+ggplot(gville_dep_annual, aes(x = YEAR, y = N_greenv))+
+  geom_point()
+
+
+##
+bbwm_dep[bbwm_dep$YEAR<2013,] %>% 
+  dplyr::rename(S_bb = S_WET,
+                N_bb = N_WET) %>% 
+  full_join(gville_dep_annual, by = "YEAR")->
+  temp
+
+s_gr_lm = lm(S_bb~S_greenv, data = temp, na.action = na.omit)
+summary(s_gr_lm)
+s_gr_slope = s_gr_lm$coefficients["S_greenv"]
+s_gr_int = s_gr_lm$coefficients["(Intercept)"]
+
+
+n_gr_lm = lm(N_bb~N_greenv, data = temp, na.action = na.omit)
+summary(n_gr_lm)
+n_gr_slope = n_gr_lm$coefficients["N_greenv"]
+n_gr_int = n_gr_lm$coefficients["(Intercept)"]
+
+temp %>% 
+  dplyr::mutate(S_est = (S_greenv*s_gr_slope)+s_gr_int,
+                N_est = (N_greenv*n_gr_slope)+n_gr_int,
+                S_bb = round(if_else(YEAR>2012, S_est,S_bb),2),
+                N_bb = round(if_else(YEAR>2012, N_est,N_bb),2),
+                data_type=if_else(YEAR>2012,"estimated","measured")) %>% 
+  dplyr::select(YEAR, S_bb, N_bb, data_type)->
+  bbwm_dep_processed
+
+ggplot(bbwm_dep_processed, aes(x = YEAR, y = N_bb))+
+         geom_point()
+
+
+### plotting input and output
+temp_flux_WB = 
+  bbwm_dep_processed %>% 
+  dplyr::mutate(N_in_W = if_else(YEAR>1988&YEAR<2017, N_bb+25.2, N_bb),
+                S_in_W = if_else(YEAR>1988&YEAR<2017, S_bb+28.8, S_bb)) %>% 
+  dplyr::select(YEAR, S_in_W, N_in_W, data_type) %>% 
+  dplyr::rename(S_bb = S_in_W,
+                N_bb = N_in_W) %>% 
+  dplyr::mutate(Watershed="WB")
+
+combined_flux = 
+  bbwm_dep_processed %>% 
+  dplyr::mutate(Watershed="EB") %>% 
+  rbind(temp_flux_WB) %>% 
+  dplyr::rename(WY=YEAR) %>% 
+  left_join(select(annual, WY, Watershed,NO3_N, SO4_S), by = c("WY","Watershed")) %>% 
+  dplyr::rename(
+                N_in = N_bb,
+                S_in = S_bb,
+                N_out = NO3_N,
+                S_out = SO4_S) %>% 
+  filter(!WY==1988) %>% 
+  group_by(Watershed) %>% 
+  dplyr::mutate(N_ret = N_in-N_out,
+                S_ret = S_in-S_out,
+                N_out = N_out*-1,
+                S_out = S_out*-1,
+                N_cumret = cumsum(N_ret),
+                S_cumret = cumsum(S_ret))
+  
+  
+ggplot() +
+  geom_point(data=combined_flux,aes(x = WY, y = N_in))+
+  geom_path(data=combined_flux,aes(x = WY, y = N_in))+
+  geom_point(data=combined_flux,aes(x = WY, y = N_out))+
+  geom_path(data=combined_flux,aes(x = WY, y = N_out))+
+  geom_bar(data=combined_flux,aes(x = WY, y = N_cumret/10), stat = "identity", alpha = 0.2)+
+  annotate("text", label = "input",x = 1995, y = 20)+
+  annotate("text", label = "output",x = 1995, y = -10)+
+  ylab("N, kg/ha/yr")+
+  scale_y_continuous(sec.axis = sec_axis(~.*10, name = "cum retention, kg/ha"))+
+  facet_wrap(~Watershed)+
+  theme_kp()
+  
+ggplot() +
+  geom_point(data=combined_flux,aes(x = WY, y = S_in))+
+  geom_path(data=combined_flux,aes(x = WY, y = S_in))+
+  geom_point(data=combined_flux,aes(x = WY, y = S_out))+
+  geom_path(data=combined_flux,aes(x = WY, y = S_out))+
+  geom_bar(data=combined_flux,aes(x = WY, y = S_cumret/10), stat = "identity", alpha = 0.2)+
+  scale_y_continuous(sec.axis = sec_axis(~.*10, name = "cum retention"))+
+  ylab("S, kg/ha/yr")+
+  facet_wrap(~Watershed)+
+  theme_kp()
+
+
+ggplot() +
+  geom_bar(data=combined_flux,aes(x = WY, y = S_in), stat = "identity", alpha = 0.2, fill = "blue")+
+  geom_bar(data=combined_flux,aes(x = WY, y = S_out), stat = "identity", alpha = 0.2)+
+  geom_point(data=combined_flux,aes(x = WY, y = S_cumret/10))+
+  geom_hline(yintercept = 0)+
+  scale_y_continuous(sec.axis = sec_axis(~.*10, name = "cum retention"))+
+  ylab("S, kg/ha/yr")+
+  facet_wrap(~Watershed)+
+  theme_kp()
+
+ggplot() +
+  geom_bar(data=combined_flux,aes(x = WY, y = N_in), stat = "identity", alpha = 0.5, fill = "blue")+
+  geom_bar(data=combined_flux,aes(x = WY, y = N_out), stat = "identity", alpha = 0.2)+
+  geom_point(data=combined_flux,aes(x = WY, y = N_cumret/20))+
+  geom_hline(yintercept = 0)+
+  scale_y_continuous(sec.axis = sec_axis(~.*20, name = "cum retention"))+
+  ylab("N, kg/ha/yr")+
+  facet_wrap(~Watershed)+
+  theme_kp()
