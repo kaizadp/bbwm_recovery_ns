@@ -174,8 +174,16 @@ summary %>%
   dplyr::mutate(period = factor(period, levels = c("pre-treatment","first decade","second decade","third decade","recovery"))) %>% 
   spread(period,summary) %>% 
     knitr::kable(align = "r")
+
+annual %>% 
+  dplyr::select(Watershed,period, NO3_N, SO4_S) %>% 
+  filter(!(period == "recovery" | period=="pre-treatment")) %>% 
+  group_by(Watershed) %>% 
+  dplyr::summarize(N = mean(NO3_N),
+                S = mean(SO4_S))
 ```
 
+# concentrations 
 
 ```{r concentrations}
 all %>% 
@@ -186,9 +194,9 @@ all %>%
 
 ggplot(temp,aes(x = date2, y = NO3_N, color = Watershed,shape=Watershed))+
   geom_point(size=2,stroke=1.5)+
-#  geom_path(size=1)+
+ # geom_path(linetype = "dashed")+
  # geom_smooth(method = lm, formula = y ~ splines::bs(x, 40), se = FALSE)+
-  scale_color_hp(discrete=TRUE,option ="Gryffindor")+
+  scale_color_hp(discrete=TRUE,option ="Gryffindor", direction=-1)+
   scale_shape_manual(values = c(1,16))+
   geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
   xlab("")+
@@ -248,7 +256,7 @@ ggplot(annual2, aes(x = WY, fill = Watershed,shape=Watershed))+
   ylab("NO3-N flux, kg/ha/yr")+
   #scale_fill_brewer(palette = "Dark2")+
   #scale_fill_manual(values = c("#bebebe","#D95F02"))+
-  scale_fill_hp(discrete=TRUE,option ="Gryffindor")+
+  scale_fill_hp(discrete=TRUE,option ="Gryffindor", direction=-1)+
   scale_shape_manual(values = c(1,19))+
   geom_hline(yintercept = 0,size=0.3)+
   geom_vline(xintercept = 1989.5,linetype="dashed")+
@@ -278,6 +286,47 @@ ggplot(annual2, aes(x = WY, fill = Watershed, shape = Watershed))+
 
 ```
 
+
+```{r fluxes3}
+annual2 %>% 
+  dplyr::mutate(no3_v = if_else(Watershed=="EB",no3_v*-1,no3_v),
+                so4_v = if_else(Watershed=="EB",so4_v*-1,so4_v))->annual3
+
+ggplot(annual3, aes(x = WY, fill = Watershed,shape=Watershed))+
+  #geom_bar(aes(y = no3),stat = "identity", alpha = 0.8)+
+  geom_line(aes(y = no3_v),color="black",size=0.6)+
+  geom_point(aes(y = no3_v), size=1.5, stroke=1)+
+  ylab("NO3-N conc, kg/L")+
+  #scale_fill_brewer(palette = "Dark2")+
+  #scale_fill_manual(values = c("#bebebe","#D95F02"))+
+  scale_fill_hp(discrete=TRUE,option ="Gryffindor", direction=-1)+
+  scale_shape_manual(values = c(1,19))+
+  geom_hline(yintercept = 0,size=0.3)+
+  geom_vline(xintercept = 1989.5,linetype="dashed")+
+  geom_vline(xintercept = 2016.5,linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = 1988, y = 1, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 1, angle = 90,size=4, hjust = "right")+ 
+  theme_kp()
+
+
+ggplot(annual3, aes(x = WY, fill = Watershed, shape = Watershed))+
+ # geom_bar(aes(y = so4),stat = "identity", alpha = 0.9)+
+  geom_line(aes(y = so4_v),color="black",size=0.6)+
+  geom_point(aes(y = so4_v), size=2, stroke=1)+
+  ylab("SO4-S conc, kg/L")+
+  #scale_fill_manual(values = c("#bebebe","darkgreen"))+
+  scale_color_hp(discrete=TRUE,option ="Slytherin")+
+  scale_shape_manual(values = c(1,19))+
+  #scale_fill_manual(values = c("#6f8ea9","#003b8f"))+
+  #scale_fill_manual(values = c("#d9d9d9","#D95F02"))+
+  geom_vline(xintercept = 1989.5,linetype="dashed")+
+  geom_vline(xintercept = 2016.5,linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = 1988, y = 4, angle = 90,size=4, hjust = "right")+ 
+  annotate("text", label = "recovery", x = 2017.5, y = 4, angle = 90,size=4, hjust = "right")+ 
+  theme_kp()
+
+
+```
 # deposition 
 
 ```{r, fig.asp=1, fig.dim=3}
