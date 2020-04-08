@@ -2,45 +2,40 @@ BBWM initial recovery
 ================
 Kaizad Patel
 
-2019-12-20
+2020-04-07
 
-## nitrate
+# SUMMARY TABLE - ANNUAL CONCENTRATIONS
 
-![](images/nitrate-1.png)<!-- -->
+volume-weighted values, in mg/L of element (NO3-N and
+SO4-S)
 
-# sulfate
+| species | Watershed | pre-treatment | first decade | second decade | third decade |    recovery |
+| ------: | --------: | ------------: | -----------: | ------------: | -----------: | ----------: |
+|  NO3\_N |        EB |     0.26 ± NA |  0.07 ± 0.02 |      0.01 ± 0 |     0.01 ± 0 |       0 ± 0 |
+|  NO3\_N |        WB |     0.28 ± NA |  0.62 ± 0.07 |   0.46 ± 0.05 |  0.55 ± 0.06 | 0.07 ± 0.04 |
+|  SO4\_S |        EB |     1.67 ± NA |  1.53 ± 0.04 |   1.29 ± 0.04 |  0.92 ± 0.04 | 0.79 ± 0.02 |
+|  SO4\_S |        WB |     1.74 ± NA |  2.68 ± 0.12 |   2.73 ± 0.07 |  2.35 ± 0.05 | 2.01 ± 0.17 |
 
-![](images/unnamed-chunk-1-1.png)<!-- -->
+overall means for treatment phase
 
-# DOC
+    #> # A tibble: 2 x 3
+    #>   Watershed      N     S
+    #>   <fct>      <dbl> <dbl>
+    #> 1 EB        0.0313  1.29
+    #> 2 WB        0.538   2.61
 
-![](images/unnamed-chunk-2-1.png)<!-- -->
+# ANNUAL STREAM CONCENTRATIONS
 
-# ANC
+![](images/markdown/annual-1.png)<!-- -->
 
-![](images/unnamed-chunk-3-1.png)<!-- -->
+# INTRA-ANNUAL CONCENTRATIONS
 
-# pH
+![](images/markdown/concentrations-1.png)<!-- -->![](images/markdown/concentrations-2.png)<!-- -->
 
-![](images/unnamed-chunk-4-1.png)<!-- -->
+# deposition
 
-# summary table – fluxes
+![](images/markdown/deposition-1.png)<!-- -->![](images/markdown/deposition-2.png)<!-- -->
 
-| species | Watershed | pre-treatment | first decade | second decade | third decade |     recovery |
-| ------: | --------: | ------------: | -----------: | ------------: | -----------: | -----------: |
-|  NO3\_N |        EB |     2.56 ± NA |   0.61 ± 0.2 |   0.11 ± 0.02 |  0.07 ± 0.02 |  0.04 ± 0.01 |
-|  NO3\_N |        WB |     3.02 ± NA |  5.93 ± 0.59 |    4.84 ± 0.7 |  5.89 ± 0.42 |  0.83 ± 0.47 |
-|  SO4\_S |        EB |    16.22 ± NA | 13.93 ± 0.82 |  12.92 ± 0.94 | 10.27 ± 0.91 |  8.86 ± 0.25 |
-|  SO4\_S |        WB |    18.83 ± NA | 26.49 ± 2.15 |   28.83 ± 2.3 |  25.92 ± 1.9 | 23.56 ± 2.01 |
+# RETENTION
 
-![](images/concentrations-1.png)<!-- -->![](images/concentrations-2.png)<!-- -->
-
-# fluxes
-
-### nitrate
-
-![](images/fluxes2-1.png)<!-- -->![](images/fluxes2-2.png)<!-- -->
-
-## deposition
-
-![](images/unnamed-chunk-6-1.png)<!-- -->![](images/unnamed-chunk-6-2.png)<!-- -->
+![](images/markdown/retention-1.png)<!-- -->
