@@ -9,12 +9,11 @@ plan = drake_plan(
 bbwm_annual = read.csv ("data/bbwm_annual.csv"), ## fluxes
 bbwm_all = read_csv("data/bbwm_all.csv"), ## concentrations
 
-# STEP 2: process annual flux data ----
+# STEP 2: process annual concentrations data ----
 # create subset with select columns
 annual = 
   bbwm_annual %>%
-  dplyr::select(WY,Watershed,Area,H2O,DOC,NO3,SO4,ANC,`Discharge.L.s`,EQPH) %>% 
-  dplyr::rename(Q = `Discharge.L.s`) %>% 
+  dplyr::select(WY,Watershed,Area,H2O,NO3,SO4) %>% 
   dplyr::mutate(Watershed = factor(Watershed, levels = c("EB","WB")),
 # create columns to group by year/period
                 WY_group = case_when(WY <1990 ~"1989",
@@ -31,14 +30,15 @@ annual =
                                   levels=c("1989","1990-99","2000-09","2010-16","2017-18")),
                 period = factor(period,
                                 levels=c("pre-treatment","first decade","second decade","third decade","recovery")),
-# convert ueq to kg
-                NO3_N = NO3*14/1000,
-                SO4_S = SO4*32/(2*1000),
-# create columns for volume-weighted
-                NO3_vol = round(NO3_N/(H2O/Area),2),
-                SO4_vol = round(SO4_S/(H2O/Area),2),
-                DOC_vol = round(DOC/(H2O/Area),2)),
 
+# create columns for volume-weighted
+# these will have units of mg/L
+NO3_vol_ueq_L = round(NO3/(H2O/Area),2),
+SO4_vol_ueq_L = round(SO4/(H2O/Area),2),
+# convert ueq to mg
+# these units are mg/L
+                NO3_N = NO3_vol_ueq_L*14/1000,
+                SO4_S = SO4_vol_ueq_L*32/(2*1000)),
 
 # STEP 3: process concentrations dataset ----
 
@@ -46,44 +46,61 @@ annual =
 all = 
   bbwm_all %>%
   dplyr::select(Watershed,Year,WY,Month,Day,`NO3 (ueq/L)`,
-         `SO4 (ueq/L)`,`DOC (mg/L)`,`Discharge (L/sec)`,`Specific Conductance (us/cm)`,`ANC (ueq/L)`) %>%
+         `SO4 (ueq/L)`) %>%
   dplyr::filter(Watershed %in% c("EB","WB")) %>% 
-  dplyr::rename(NO3 = `NO3 (ueq/L)`,
-              SO4 = `SO4 (ueq/L)`,
-              DOC = `DOC (mg/L)`,
-              Q = `Discharge (L/sec)`,
-              ANC = `ANC (ueq/L)`) %>% 
-  dplyr::mutate(NO3_N = NO3*14/1000,
-                SO4_S = SO4*32/(2*1000)) %>% 
+  dplyr::rename(NO3_ueq_L = `NO3 (ueq/L)`,
+              SO4_ueq_L = `SO4 (ueq/L)`) %>% 
+  dplyr::mutate(NO3_N = NO3_ueq_L*14/1000, # mg/L
+                SO4_S = SO4_ueq_L*32/(2*1000)) %>% # mg/L 
   dplyr::mutate(dates = as.Date(paste(Year, Month, Day,sep="-"))),
-
-
-
 
 # STEP 4: annual flux summary table -------------------- # ----
 
 summary = annual %>% 
   dplyr::select(Watershed,period,NO3_N,SO4_S) %>% 
   #gather(species,flux,NO3:SO4) %>% 
-  melt(measure.vars = c("NO3_N","SO4_S"),value.name = "flux") %>% 
+  melt(measure.vars = c("NO3_N","SO4_S"),value.name = "conc_mg_L") %>% 
   dplyr::rename(species = variable) %>% 
   group_by(Watershed,period,species) %>% 
-  dplyr::summarise(mean = mean(flux),
-                   se = sd(flux)/sqrt(n())) %>% 
+  dplyr::summarise(mean = mean(conc_mg_L),
+                   se = sd(conc_mg_L)/sqrt(n())) %>% 
   dplyr::mutate(summary = paste(round(mean,2),"\u00B1",round(se,2))),
 
-# STEP 5: exporting ALL and ANNUAL ----
+# STEP 5: annual export flux ----
+
+export_wy = 
+  bbwm_annual  %>% 
+  dplyr::mutate(NH4 = replace_na(NH4,0),
+                N_eq = NH4+NO3,
+                N_kgha = round(N_eq*14/1000,2),
+                S_kgha = round(SO4*32/(2*1000),2)) %>% 
+  dplyr::select(WY, Watershed, N_kgha, S_kgha),
+
+#
+# STEP 6: exporting ALL and ANNUAL ----
 write.csv(all,"processed/concentrations.csv", row.names = FALSE),
 write.csv(annual,"processed/fluxes.csv", row.names = FALSE),
-write.csv(summary,"processed/summary.csv", row.names = FALSE)
+write.csv(summary,"processed/summary.csv", row.names = FALSE),
+write.csv(export_wy,"processed/flux_export.csv", row.names = FALSE)
 
 )
 
+make(plan)
 
 ################################
 ################################
 
 
+all %>% 
+  dplyr::mutate(doy = yday(dates))->
+  all
+
+ggplot(all[all$Watershed=="WB",], aes(x = doy, y = NO3_N, color = as.factor(Year)))+
+  geom_point()+
+  geom_path()+
+  geom_smooth()+
+  xlim(0,200)+
+  facet_wrap(Watershed~Year)
 
       ##  
       ##    )
