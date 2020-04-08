@@ -2,6 +2,11 @@
 ### KAIZAD F. PATEL
 ### DECEMBER 2019
 
+# 2-input_fluxes.R
+# input deposition for N and S
+# using data from BBWM and Howland
+
+
 source("0-bbwm_packages.R")
 
 # 1. input files ----
@@ -15,7 +20,7 @@ bbwm_dep %>%
   select(YEAR, S_WET, N_WET) %>% 
   filter(!YEAR=="2013")->
   bbwm_dep
-### NOTE: BBWM dep data are foe WATER YEAR
+### NOTE: BBWM dep data are for WATER YEAR
 
 
 how_dep %>% 
@@ -24,19 +29,18 @@ how_dep %>%
   select(YEAR, S_WET, N_WET, S_DRY, N_DRY)->
   how_dep
 ### NOTE: Howland dep data are for CALENDAR YEAR, so we can't use them with BBWM's WY.
-# we want Dry Dep data from HOW, so we calculate the dry-dep factor and apply that to BBWM's wet dep to estimate dry-dep at the site.
+# we want Dry Dep data from HOW, 
+# so we calculate the dry-dep factor and apply that to BBWM's wet dep to estimate dry-dep at the site.
 # FML
 # multiply wet-dep by the factor to get dry-dep
 
 N_FACTOR = mean(how_dep$N_DRY/how_dep$N_WET)
 S_FACTOR = mean(how_dep$S_DRY/how_dep$S_WET)
 
-
+              # plots to check trends
                 ggplot(how_dep, aes(y = N_WET/N_DRY, x = YEAR))+
                   geom_point()
 
-                dep = rbind(bbwm_dep,how_dep)
-                
                 ggplot(bbwm_dep, aes(x = YEAR, y = N_WET))+
                   geom_point()+
                   geom_smooth(method = "lm")
@@ -45,7 +49,7 @@ S_FACTOR = mean(how_dep$S_DRY/how_dep$S_WET)
                   geom_point()+
                   geom_smooth(method = "lm")
                 
-
+#
 # 2. filling missing data for 2013 onwards ----
 ## 2a. simple linear regression extrapolation of BBWM data ----
 
@@ -157,55 +161,11 @@ ggplot(bbwm_dep_processed, aes(x = YEAR, y = N_bb))+
 
 
 #
-## 2c. simple linear regression with GREENVILLE data ----
-gville_dep_seasonal %>% 
-  dplyr::mutate(YEAR = if_else(seas=="Fall",as.integer(yr+1),yr)) %>%
-  filter(NO3>0) %>% 
-  group_by(YEAR) %>% 
-  dplyr::summarize(NO3_kgha = sum(NO3),
-                   SO4_kgha = sum(SO4)) %>% 
-  filter(YEAR>1987&YEAR<2019) %>% 
-  ungroup %>% 
-  dplyr::mutate(N_greenv = round(NO3_kgha*14/62,2),
-                S_greenv = round(SO4_kgha*32/96,2)) %>% 
-  dplyr::select(YEAR, N_greenv, S_greenv)->gville_dep_annual
+# 3. input-output fluxes ----
+# the input fluxes so far are ambient (EB) only
+# we need to add values for WB
+# create a temporary file and then combine with ambient
 
-ggplot(gville_dep_annual, aes(x = YEAR, y = N_greenv))+
-  geom_point()
-
-
-##
-bbwm_dep[bbwm_dep$YEAR<2013,] %>% 
-  dplyr::rename(S_bb = S_WET,
-                N_bb = N_WET) %>% 
-  full_join(gville_dep_annual, by = "YEAR")->
-  temp
-
-s_gr_lm = lm(S_bb~S_greenv, data = temp, na.action = na.omit)
-summary(s_gr_lm)
-s_gr_slope = s_gr_lm$coefficients["S_greenv"]
-s_gr_int = s_gr_lm$coefficients["(Intercept)"]
-
-
-n_gr_lm = lm(N_bb~N_greenv, data = temp, na.action = na.omit)
-summary(n_gr_lm)
-n_gr_slope = n_gr_lm$coefficients["N_greenv"]
-n_gr_int = n_gr_lm$coefficients["(Intercept)"]
-
-temp %>% 
-  dplyr::mutate(S_est = (S_greenv*s_gr_slope)+s_gr_int,
-                N_est = (N_greenv*n_gr_slope)+n_gr_int,
-                S_bb = round(if_else(YEAR>2012, S_est,S_bb),2),
-                N_bb = round(if_else(YEAR>2012, N_est,N_bb),2),
-                data_type=if_else(YEAR>2012,"estimated","measured")) %>% 
-  dplyr::select(YEAR, S_bb, N_bb, data_type)->
-  bbwm_dep_processed
-
-ggplot(bbwm_dep_processed, aes(x = YEAR, y = N_bb))+
-         geom_point()
-
-#
-### plotting input and output ----
 temp_flux_WB = 
   bbwm_dep_processed %>% 
   dplyr::mutate(N_in_W = if_else(YEAR>1989&YEAR<2017, N_in+25.2, N_in),
@@ -215,6 +175,9 @@ temp_flux_WB =
                 N_in = N_in_W) %>% 
   dplyr::mutate(Watershed="WB")
 
+
+export_wy = read.csv("processed/flux_export.csv")
+  
 combined_flux = 
   bbwm_dep_processed %>% 
 # this is EB-deposition only
@@ -240,58 +203,8 @@ combined_flux =
   dplyr::mutate(N_percret = (N_ret/N_in)*100,
                 S_percret = (S_ret/S_in)*100)
   
-### OUTPUT  
+### OUTPUT  ----
 write_csv(combined_flux,"processed/input_output.csv")  
+write_csv(bbwm_dep_processed,"processed/deposition.csv")  
 
-ggplot() +
-  geom_bar(data=combined_flux,aes(x = WY, y = N_cumret/20), stat = "identity", alpha = 0.3)+
-  geom_point(data=combined_flux,aes(x = WY, y = N_in), stroke=1)+
-  geom_path(data=combined_flux,aes(x = WY, y = N_in))+
-  geom_point(data=combined_flux,aes(x = WY, y = N_out2), shape=1, stroke=1)+
-  geom_path(data=combined_flux,aes(x = WY, y = N_out2))+
-  scale_y_continuous(sec.axis = sec_axis(~.*20, name = "cum retention, kg/ha"))+
-  annotate("text", label = "input",x = 1995, y = 20)+
-  annotate("text", label = "output",x = 1995, y = -10)+
-  ylab("N, kg/ha/yr")+
-  geom_vline(xintercept = 1989.5, linetype="dashed")+
-  geom_vline(xintercept = 2016.5, linetype="dashed")+
-  geom_hline(yintercept = 0)+
-  scale_color_hp(discrete=TRUE,option ="Gryffindor",direction=-1)+
-  facet_wrap(~Watershed)+
-  theme_kp()
-  
- ggplot() +
-  geom_bar(data=combined_flux,aes(fill=Watershed,x = WY, y = S_cumret/5), stat = "identity", alpha = 0.5)+
-  geom_point(data=combined_flux,aes(x = WY, y = S_in), stroke=1)+
-  geom_path(data=combined_flux,aes(x = WY, y = S_in))+
-  geom_point(data=combined_flux,aes(x = WY, y = S_out2), shape=1, stroke=1)+
-  geom_path(data=combined_flux,aes(x = WY, y = S_out2))+
-  scale_y_continuous(sec.axis = sec_axis(~.*5, name = "cum retention"))+
-  ylab("S, kg/ha/yr")+
-  geom_vline(xintercept = 1989.5, linetype="dashed")+
-  geom_vline(xintercept = 2016.5, linetype="dashed")+
-  geom_hline(yintercept = 0)+
-  scale_fill_hp(discrete=TRUE,option ="Slytherin")+
-  facet_wrap(~Watershed)+
-  theme_kp()
-
-# retention only
- ggplot() +
-   geom_point(data=combined_flux,aes(color=Watershed,x = WY, y = N_cumret))+
-   ylab("N, kg/ha/yr")+
-   geom_vline(xintercept = 1989.5, linetype="dashed")+
-   geom_vline(xintercept = 2016.5, linetype="dashed")+
-   geom_hline(yintercept = 0)+
-   scale_color_hp(discrete=TRUE,option ="Gryffindor", direction=-1)+
-   theme_kp() 
-  
- ggplot() +
-   geom_point(data=combined_flux,aes(color=Watershed,x = WY, y = S_cumret))+
-   ylab("S, kg/ha/yr")+
-   geom_vline(xintercept = 1989.5, linetype="dashed")+
-   geom_vline(xintercept = 2016.5, linetype="dashed")+
-   geom_hline(yintercept = 0)+
-   scale_color_hp(discrete=TRUE,option ="Slytherin")+
-   theme_kp()
- 
 
