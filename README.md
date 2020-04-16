@@ -1,12 +1,12 @@
-# bbwm_recovery_ns
-BBWM stream recovery manuscript for NO3 and SO4
+# The Bear Brook Watershed in Maine
+# Initial Recovery from Acid Deposition
 
-chemistry as eq/ha/yr or mol/ha/yr
+----
 
-water as 10^6 L/yr
+`data/`  input files for stream, soil, and deposition chemistry  
+`processed/`   output data files created using the R scripts  
 
-all are exports
+----
 
-discharge and EQPH are annual average
 
 nitrate bd = half-detect (0.05 ueq/L)
