@@ -1,4 +1,5 @@
-# The Bear Brook Watershed in Maine: Initial Recovery from Acid Deposition
+# The Bear Brook Watershed in Maine: 
+# Initial Recovery from Acid Deposition
 
 ----
 
