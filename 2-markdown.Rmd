@@ -113,6 +113,9 @@ ggplot(temp,aes(x = date2, y = NO3_N, color = Watershed,shape=Watershed))+
   ylab(expression(bold("NO"[3]*"-N, mg L"^{-1})))+
   theme_kp()+
   scale_x_date(date_breaks = "6 months", date_labels =  "%b %Y") +
+  annotate("text", label = "treatment stopped", x = ymd("2017-06-01"), y = 1.2, hjust=0, size=4)+
+  annotate("curve", x = as.Date("2017-05-01"), xend = as.Date("2016-11-15"), y = 1.2, yend = 1,
+           curvature = 0.2)+
   #facet_wrap(~Watershed, scales = "free")+
   #ylim(0,150)+
   #scale_y_continuous(trans='log10')
@@ -164,41 +167,71 @@ ggplot(deposition, aes(x = YEAR, y = N_in))+
 # RETENTION 
 
 ```{r retention, fig.height=10, fig.width=10}
-gg_ret_n = 
-  ggplot() +
-  geom_bar(data=combined_flux,aes(x = WY, y = N_cumret/20), stat = "identity", alpha = 0.3)+
-  geom_point(data=combined_flux,aes(x = WY, y = N_in), stroke=1)+
-  geom_path(data=combined_flux,aes(x = WY, y = N_in))+
-  geom_point(data=combined_flux,aes(x = WY, y = N_out2), shape=1, stroke=1)+
-  #geom_point(data=combined_flux,aes(x = WY, y = N_ret), shape=1, stroke=1, size=2)+
-  geom_path(data=combined_flux,aes(x = WY, y = N_out2))+
-  scale_y_continuous(sec.axis = sec_axis(~.*20, name = "cum retention, kg/ha"))+
-  annotate("text", label = "input",x = 1995, y = 20)+
-  annotate("text", label = "output",x = 1995, y = -10)+
-  ylab(expression(bold("N, kg ha"^{-1}*"yr"^{-1})))+
-  geom_vline(xintercept = 1989.5, linetype="dashed")+
-  geom_vline(xintercept = 2016.5, linetype="dashed")+
-  geom_hline(yintercept = 0)+
-  scale_fill_hp(discrete=TRUE,option ="Gryffindor",direction=-1)+
-  facet_wrap(~Watershed)+
-  theme_kp()
-  
+
+ann_text1 = data.frame(lab = c("pre-treatment", "recovery"),
+                      Watershed = c("WB", "WB"),
+                      x = c(1988, 2019),
+                      y = c(40, 40))
+
+ann_text2 = data.frame(lab = c("INPUT FLUX", "OUTPUT FLUX", NA, NA),
+                      Watershed = c("EB", "EB", "EB", "EB"),
+                      x = c(1995.5, 1995.5, 1995, 1992),
+                      y = c(22, -30, 22,-18),
+                      xend = c(NA, NA, 1992, 1995),
+                      yend = c(NA, NA, 10, -30))
+ 
 gg_ret_s = 
    ggplot() +
-  geom_bar(data=combined_flux,aes(x = WY, y = S_cumret/5), stat = "identity", alpha = 0.5)+
+  geom_bar(data=combined_flux,aes(x = WY, y = S_cumret/5), stat = "identity", alpha = 0.3,
+           fill = "#0F6642")+
   geom_point(data=combined_flux,aes(x = WY, y = S_in), stroke=1)+
   geom_path(data=combined_flux,aes(x = WY, y = S_in))+
   geom_point(data=combined_flux,aes(x = WY, y = S_out2), shape=1, stroke=1)+
   geom_path(data=combined_flux,aes(x = WY, y = S_out2))+
   #geom_point(data=combined_flux,aes(x = WY, y = S_ret), shape=1, stroke=1, size=2)+
-  scale_y_continuous(sec.axis = sec_axis(~.*5, name = "cum retention"))+
+  scale_y_continuous(sec.axis = sec_axis(~.*5, 
+                                         name = expression(bold("cumulative retention, kg ha"^{-1}))))+
   ylab(expression(bold("S, kg ha"^{-1}*"yr"^{-1})))+
   geom_vline(xintercept = 1989.5, linetype="dashed")+
   geom_vline(xintercept = 2016.5, linetype="dashed")+
   geom_hline(yintercept = 0)+
+  xlim(1988,2019)+
+  
+# annotate("text", label = "INPUT FLUX",x = 2005, y = 40, size=5)+
+#  annotate("text", label = "OUTPUT FLUX",x = 2005, y = -40, size=5)+
+  geom_text(data = ann_text1, aes(x = x, y = y, label = lab), angle = 90, hjust="right")+  
+  geom_text(data = ann_text2, aes(x = x, y = y, label = lab), hjust="left")+  
+  geom_curve(data = ann_text2, aes(x = x, y = y,  xend = xend, yend = yend), curvature = 0.2)+  
+    
   scale_fill_hp(discrete=TRUE,option ="Slytherin")+
   facet_wrap(~Watershed)+
   theme_kp()
+
+
+gg_ret_n = 
+  ggplot() +
+  geom_bar(data=combined_flux,aes(x = WY, y = N_cumret/20), stat = "identity", alpha = 0.3,
+           fill = "#0072A6")+
+  geom_point(data=combined_flux,aes(x = WY, y = N_in), stroke=1)+
+  geom_path(data=combined_flux,aes(x = WY, y = N_in))+
+  geom_point(data=combined_flux,aes(x = WY, y = N_out2), shape=1, stroke=1)+
+  #geom_point(data=combined_flux,aes(x = WY, y = N_ret), shape=1, stroke=1, size=2)+
+  geom_path(data=combined_flux,aes(x = WY, y = N_out2))+
+  scale_y_continuous(sec.axis = sec_axis(~.*20, 
+                                         name = expression(bold("cumulative retention, kg ha"^{-1}))))+
+#  annotate("text", label = "INPUT",x = 2005, y = 35, size=5)+
+#  annotate("text", label = "OUTPUT",x = 2005, y = -10, size=5)+
+#  geom_text(data = ann_text, aes(x = WY, y = N_in, label = lab), angle = 90, hjust="right")+  
+  ylab(expression(bold("N, kg ha"^{-1}*"yr"^{-1})))+
+  geom_vline(xintercept = 1989.5, linetype="dashed")+
+  geom_vline(xintercept = 2016.5, linetype="dashed")+
+  geom_hline(yintercept = 0)+
+    xlim(1988,2019)+
+
+  scale_fill_hp(discrete=TRUE,option ="Gryffindor",direction=-1)+
+  facet_wrap(~Watershed)+
+  theme_kp()
+
 
 gg_ret_s / gg_ret_n
 ```
