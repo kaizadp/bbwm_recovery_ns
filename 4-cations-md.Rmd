@@ -122,10 +122,11 @@ cations_annual %>%
 ```
 
 ----
+
 ANC, a measure of acidity of the solution, declined during the WB recovery phase, suggesting a possible reduction in acidity. We therefore investigated the base cations -- Ca, Mg, Na, K. Na is almost balanced by Cl, with a small contribution from weathering. K is typically < 5-6 µeq/L and varies only a few µeq/L through the year. Thus, we can use, as an approximation of the acidity of a system, (Ca + Mg) – (SO4 + NO3).
 
 
-> from SAN  
+from SAN  
 (The sum of base cations) minus (the sum of strong acids) is a measure of the acidity of a solution. If negative, the ANC is negative. As the difference grows, ANC becomes more negative and pH declines. For both EB and WB, the major cations are Ca, Mg, Na, and K. Na is almost balanced by Cl, with a small contribution from weathering. K is typically < 5-6 µeq/L and varies only a few µeq/L through the year. Thus, we can use, as an approximation of the acidity of a system, (Ca+Mg) – (SO4 + NO3).  
 In EB, (Ca + Mg) declined more than (SO4 + NO3) from 1989 to about 2010, causing a pH lower than the 1987-1989 calibration period (Fig. 8), a trajectory related to recovery of soil base saturation. The pH is now increasing as (Ca + Mg) continue to recover, a consequence of restoration of base saturation from chemical weathering. In WB, (Ca + Mg) increased dramatically during the initial years of treatment, and (SO4 + NO3) increased more than (Ca + Mg), driving the data away from the 1:1 line, the consequence of increasing acidity. As Ca and Mg became depleted in the soil exchange complex and SO4 started to decline because of declining atmospheric deposition of SO4, the annual data slid clockwise on Figure 8, back toward the 1:1 line, and accelerated during the two-year recovery period after treatment ceased. (Ca + Mg) and (SO4 + NO3) in 2018 were lower than the initial values in 1989. The recovery in WB will likely follow a path similar to that of EB, but retarded by years.
 
@@ -183,6 +184,50 @@ ggplot(camg_ns, aes(x = NS, y = CaMg))+
   ylim (35,300)+
   facet_grid(.~Watershed)+
   theme_bw()+
+  NULL
+```
+
+```{r camgns2, fig.width=7, fig.height=6}
+wy_label2 = tribble(
+~Watershed, ~label, ~x, ~y,
+#"WB", 1989, 128, 110,
+#"WB", 1990, 145, 118,
+"WB", 1995, 264, 174,
+"WB", 2000, 222, 121,
+"WB", 2005, 202, 100,
+"WB", 2015, 178, 81,
+"WB", 2018, 117, 66,
+"EB", 1989, 138, 109,
+"EB", 1996, 74, 95,
+"EB", 2012, 55, 77,
+"EB", 2008, 70, 53,
+"EB", 2018, 50, 40
+)
+
+ggplot(camg_ns %>% filter(Watershed=="WB"), aes(x = NS, y = CaMg))+
+  
+  geom_path(color = "black")+
+  geom_point(aes(shape=WY_group,color=WY_group), size=3,stroke=1.5)+
+  
+  scale_color_manual(values=c("green4","royalblue3","darkorange3","violetred4", "black"))+
+  scale_shape_manual(values=c(1,19,17,4, 5))+
+  
+  geom_point(data = camg_ns %>% filter(Watershed=="EB"),
+            size=3,stroke=1.5, color = "black", shape = 19)+
+  geom_path(data = camg_ns %>% filter(Watershed=="EB"),
+            color = "black")+
+
+  geom_text(data = wy_label2, aes(x = x, y = y, label = label), size=4)+
+  
+  labs (y = expression(bold("(Ca"^+2 * "+ Mg"^+2* ") ("*mu*"eq L"^-1*")" )),
+        x = expression(bold("(NO"[3]^-{}*"+SO"[4] ^-2* ") ("*mu*"eq L"^-1*")" )),
+        shape = "", color = "")+
+  geom_abline(slope=1,linetype = "dashed")+
+  annotate("text", label = "1:1", x = 170, y = 180, angle = 65,size=5)+ 
+  xlim (35,300)+
+  ylim (35,200)+
+  theme_bw()+
+  theme(legend.position = c(0.75, 0.3))+
   NULL
 ```
 

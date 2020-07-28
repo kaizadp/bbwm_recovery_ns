@@ -8,17 +8,50 @@ for more cation/chemistry graphs, see
 
 ![](images/markdown-cations/chargebalance_ggplot-1.png)<!-- -->
 
-|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ANC, a measure of acidity of the solution, declined during the WB recovery phase, suggesting a possible reduction in acidity. We therefore investigated the base cations – Ca, Mg, Na, K. Na is almost balanced by Cl, with a small contribution from weathering. K is typically \< 5-6 µeq/L and varies only a few µeq/L through the year. Thus, we can use, as an approximation of the acidity of a system, (Ca + Mg) – (SO4 + NO3).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| \> from SAN (The sum of base cations) minus (the sum of strong acids) is a measure of the acidity of a solution. If negative, the ANC is negative. As the difference grows, ANC becomes more negative and pH declines. For both EB and WB, the major cations are Ca, Mg, Na, and K. Na is almost balanced by Cl, with a small contribution from weathering. K is typically \< 5-6 µeq/L and varies only a few µeq/L through the year. Thus, we can use, as an approximation of the acidity of a system, (Ca+Mg) – (SO4 + NO3). In EB, (Ca + Mg) declined more than (SO4 + NO3) from 1989 to about 2010, causing a pH lower than the 1987-1989 calibration period (Fig. 8), a trajectory related to recovery of soil base saturation. The pH is now increasing as (Ca + Mg) continue to recover, a consequence of restoration of base saturation from chemical weathering. In WB, (Ca + Mg) increased dramatically during the initial years of treatment, and (SO4 + NO3) increased more than (Ca + Mg), driving the data away from the 1:1 line, the consequence of increasing acidity. As Ca and Mg became depleted in the soil exchange complex and SO4 started to decline because of declining atmospheric deposition of SO4, the annual data slid clockwise on Figure 8, back toward the 1:1 line, and accelerated during the two-year recovery period after treatment ceased. (Ca + Mg) and (SO4 + NO3) in 2018 were lower than the initial values in 1989. The recovery in WB will likely follow a path similar to that of EB, but retarded by years. |
-| ![](images/markdown-cations/camgns-1.png)<!-- -->                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+-----
+
+ANC, a measure of acidity of the solution, declined during the WB
+recovery phase, suggesting a possible reduction in acidity. We therefore
+investigated the base cations – Ca, Mg, Na, K. Na is almost balanced by
+Cl, with a small contribution from weathering. K is typically \< 5-6
+µeq/L and varies only a few µeq/L through the year. Thus, we can use,
+as an approximation of the acidity of a system, (Ca + Mg) – (SO4 + NO3).
+
+from SAN  
+(The sum of base cations) minus (the sum of strong acids) is a measure
+of the acidity of a solution. If negative, the ANC is negative. As the
+difference grows, ANC becomes more negative and pH declines. For both EB
+and WB, the major cations are Ca, Mg, Na, and K. Na is almost balanced
+by Cl, with a small contribution from weathering. K is typically \< 5-6
+µeq/L and varies only a few µeq/L through the year. Thus, we can use,
+as an approximation of the acidity of a system, (Ca+Mg) – (SO4 + NO3).  
+In EB, (Ca + Mg) declined more than (SO4 + NO3) from 1989 to about 2010,
+causing a pH lower than the 1987-1989 calibration period (Fig. 8), a
+trajectory related to recovery of soil base saturation. The pH is now
+increasing as (Ca + Mg) continue to recover, a consequence of
+restoration of base saturation from chemical weathering. In WB, (Ca +
+Mg) increased dramatically during the initial years of treatment, and
+(SO4 + NO3) increased more than (Ca + Mg), driving the data away from
+the 1:1 line, the consequence of increasing acidity. As Ca and Mg became
+depleted in the soil exchange complex and SO4 started to decline because
+of declining atmospheric deposition of SO4, the annual data slid
+clockwise on Figure 8, back toward the 1:1 line, and accelerated during
+the two-year recovery period after treatment ceased. (Ca + Mg) and (SO4
++ NO3) in 2018 were lower than the initial values in 1989. The recovery
+in WB will likely follow a path similar to that of EB, but retarded by
+years.
+
+![](images/markdown-cations/camgns-1.png)<!-- -->
+
+![](images/markdown-cations/camgns2-1.png)<!-- -->
+
+-----
 
 <details>
 
 <summary>Session Info</summary>
 
-Date: 2020-07-27
+Date: 2020-07-28
 
     #> R version 4.0.2 (2020-06-22)
     #> Platform: x86_64-apple-darwin17.0 (64-bit)
