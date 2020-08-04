@@ -2,12 +2,11 @@ BBWM initial recovery
 ================
 Kaizad Patel
 
-2020-05-12
+2020-08-03
 
 # SUMMARY TABLE - ANNUAL CONCENTRATIONS
 
-volume-weighted values, in mg/L of element (NO3-N and
-SO4-S)
+volume-weighted values, in mg/L of element (NO3-N and SO4-S)
 
 | species | Watershed | pre-treatment | first decade | second decade | third decade |    recovery |
 | ------: | --------: | ------------: | -----------: | ------------: | -----------: | ----------: |
@@ -20,13 +19,15 @@ overall means for treatment phase
 
     #> # A tibble: 2 x 3
     #>   Watershed      N     S
-    #>   <fct>      <dbl> <dbl>
+    #>   <chr>      <dbl> <dbl>
     #> 1 EB        0.0313  1.29
     #> 2 WB        0.538   2.61
 
 # ANNUAL STREAM CONCENTRATIONS
 
 ![](images/markdown/annual-1.png)<!-- -->
+
+![](images/markdown/all_conc-1.png)<!-- -->
 
 # INTRA-ANNUAL CONCENTRATIONS
 
