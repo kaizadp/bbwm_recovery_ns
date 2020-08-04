@@ -231,6 +231,120 @@ ggplot(camg_ns %>% filter(Watershed=="WB"), aes(x = NS, y = CaMg))+
   NULL
 ```
 
+```{r camgns3, fig.width=7, fig.height=6}
+wy_label2 = tribble(
+~Watershed, ~label, ~x, ~y,
+#"WB", 1989, 128, 110,
+#"WB", 1990, 145, 118,
+"WB", 1995, 264, 174,
+"WB", 2000, 222, 121,
+"WB", 2005, 202, 100,
+"WB", 2015, 178, 81,
+"WB", 2018, 117, 66,
+"EB", 1989, 138, 109,
+"EB", 1996, 74, 95,
+"EB", 2012, 55, 77,
+"EB", 2008, 70, 53,
+"EB", 2018, 50, 40
+)
+
+ggplot(data = camg_ns %>% filter(Watershed=="WB"),
+       aes(x = NS, y = CaMg))+
+  # geoms ----  
+  ## WB
+  geom_path(color = "black")+
+  geom_point(aes(x = NS, y = CaMg, fill=WY_group), shape=21, size=5,stroke=1)+
+  ## EB
+  geom_path(data = camg_ns %>% filter(Watershed=="EB"),
+            color = "black")+  
+  geom_point(data = camg_ns %>% filter(Watershed=="EB"),
+            size=2,stroke=1.5, shape = 19, color="black")+
+  
+  # set fill for WB ----
+  scale_fill_manual(values = PNWColors::pnw_palette("Sailboat"))+
+
+  # add labels ----
+  geom_text(data = wy_label2, 
+            aes(x = x, y = y, label = label), size=3)+
+  labs (y = expression(bold("(Ca"^+2 * "+ Mg"^+2* ") ("*mu*"eq L"^-1*")" )),
+        x = expression(bold("(NO"[3]^-{}*"+SO"[4] ^-2* ") ("*mu*"eq L"^-1*")" )),
+        shape = "", color = "", fill = "West Bear")+
+  
+  # add arrows ----
+  annotate("segment", x = 100, y = 125, xend = 37, yend = 80, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("segment", x = 120, y = 145, xend = 220, yend = 190, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("segment", x = 260, y = 100, xend = 180, yend = 60, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("curve", x = 260, y = 190, xend = 280, yend = 120, curvature = -0.4, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  
+  # axis limits and theme ----
+  xlim (35,300)+
+  ylim (35,200)+
+  theme_bw()+
+  theme(legend.position = c(0.85, 0.15))+
+  NULL
+```
+
+```{r camgns4, fig.width=7, fig.height=6}
+wy_label2 = tribble(
+~Watershed, ~label, ~x, ~y,
+#"WB", 1989, 128, 110,
+#"WB", 1990, 145, 118,
+"WB", 1995, 264, 174,
+"WB", 2000, 222, 121,
+"WB", 2005, 202, 100,
+"WB", 2015, 178, 81,
+"WB", 2018, 117, 66
+)
+
+ggplot(data = camg_ns %>% filter(Watershed=="WB"),
+       aes(x = NS, y = CaMg))+
+  # geoms ----  
+  ## WB
+  geom_path(color = "black")+
+  geom_point(aes(x = NS, y = CaMg, fill=WY_group), shape=21, size=5,stroke=1)+
+  ## EB
+  geom_path(data = camg_ns %>% filter(Watershed=="EB"),
+            color = "black")+  
+  geom_point(data = camg_ns %>% filter(Watershed=="EB"),
+            size=2,stroke=1.5, shape = 19, aes(color = WY_group))+
+  
+  # set fill for WB ----
+  scale_fill_manual(values = PNWColors::pnw_palette("Sailboat"))+
+  scale_color_manual(values = PNWColors::pnw_palette("Sailboat"), guide="none")+
+
+  # add labels ----
+  geom_text(data = wy_label2, 
+            aes(x = x, y = y, label = label), size=3)+
+  labs (y = expression(bold("(Ca"^+2 * "+ Mg"^+2* ") ("*mu*"eq L"^-1*")" )),
+        x = expression(bold("(NO"[3]^-{}*"+SO"[4] ^-2* ") ("*mu*"eq L"^-1*")" )),
+        shape = "", color = "", fill = "")+
+  
+  # add arrows ----
+  annotate("segment", x = 100, y = 125, xend = 37, yend = 80, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("segment", x = 120, y = 145, xend = 220, yend = 190, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("segment", x = 260, y = 100, xend = 180, yend = 60, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("curve", x = 260, y = 190, xend = 280, yend = 120, curvature = -0.4, size=1, color = "grey60",
+           arrow = arrow(length = unit(0.3, "cm")))+
+  annotate("text", label = "East Bear", x = 50, y = 110)+
+  annotate("text", label = "West Bear", x = 130, y = 170)+
+  
+  
+  # axis limits and theme ----
+  xlim (35,300)+
+  ylim (35,200)+
+  theme_kp()+
+  theme(legend.position = c(0.88, 0.2))+
+  NULL
+
+```
+
 ---
 <details>
   <summary>Session Info</summary>
