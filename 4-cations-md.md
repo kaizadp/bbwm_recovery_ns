@@ -55,7 +55,7 @@ years.
 
 <summary>Session Info</summary>
 
-Date: 2020-08-03
+Date: 2020-08-09
 
     #> R version 4.0.2 (2020-06-22)
     #> Platform: x86_64-apple-darwin17.0 (64-bit)

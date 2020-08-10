@@ -302,6 +302,8 @@ wy_label2 = tribble(
 
 ggplot(data = camg_ns %>% filter(Watershed=="WB"),
        aes(x = NS, y = CaMg))+
+  geom_abline(slope=1,linetype = "dashed", size=0.5)+
+
   # geoms ----  
   ## WB
   geom_path(color = "black")+
@@ -334,7 +336,6 @@ ggplot(data = camg_ns %>% filter(Watershed=="WB"),
            arrow = arrow(length = unit(0.3, "cm")))+
   annotate("text", label = "East Bear", x = 50, y = 110)+
   annotate("text", label = "West Bear", x = 130, y = 170)+
-  
   
   # axis limits and theme ----
   xlim (35,300)+
