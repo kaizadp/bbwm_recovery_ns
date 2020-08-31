@@ -41,13 +41,11 @@ the two-year recovery period after treatment ceased. (Ca + Mg) and (SO4
 in WB will likely follow a path similar to that of EB, but retarded by
 years.
 
-![](images/markdown-cations/camgns-1.png)<!-- -->
-
 ![](images/markdown-cations/camgns2-1.png)<!-- -->
 
-![](images/markdown-cations/camgns3-1.png)<!-- -->
-
 ![](images/markdown-cations/camgns4-1.png)<!-- -->
+
+![](images/markdown-cations/anc-1.png)<!-- -->
 
 -----
 
@@ -55,7 +53,7 @@ years.
 
 <summary>Session Info</summary>
 
-Date: 2020-08-09
+Date: 2020-08-24
 
     #> R version 4.0.2 (2020-06-22)
     #> Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -74,7 +72,7 @@ Date: 2020-08-09
     #> other attached packages:
     #>  [1] harrypotter_2.1.1   drake_7.12.4        gameofthrones_1.0.2
     #>  [4] gsheet_0.4.5        googlesheets_0.3.0  agricolae_1.3-3    
-    #>  [7] car_3.0-8           carData_3.0-4       nlme_3.1-148       
+    #>  [7] car_3.0-9           carData_3.0-4       nlme_3.1-148       
     #> [10] stringi_1.4.6       ggExtra_0.9         ggalt_0.4.0        
     #> [13] reshape2_1.4.4      knitr_1.29          qwraps2_0.4.2      
     #> [16] cowplot_1.0.0       data.table_1.13.0   Rmisc_1.5          
@@ -99,7 +97,7 @@ Date: 2020-08-09
     #> [45] parallel_4.0.2     proj4_1.0-10       RColorBrewer_1.1-2 yaml_2.2.1        
     #> [49] curl_4.3           gridExtra_2.3      labelled_2.5.0     highr_0.8         
     #> [53] klaR_0.6-15        AlgDesign_1.2.0    PNWColors_0.1.0    filelock_1.0.2    
-    #> [57] zip_2.0.4          storr_1.2.1        rlang_0.4.7        pkgconfig_2.0.3   
+    #> [57] zip_2.1.0          storr_1.2.1        rlang_0.4.7        pkgconfig_2.0.3   
     #> [61] evaluate_0.14      labeling_0.3       tidyselect_1.1.0   magrittr_1.5      
     #> [65] R6_2.4.1           generics_0.0.2     base64url_1.4      combinat_0.0-8    
     #> [69] txtq_0.2.3         DBI_1.1.0          pillar_1.4.6       haven_2.3.1       
