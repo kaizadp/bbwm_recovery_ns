@@ -19,9 +19,10 @@ source("0-bbwm_packages.R")
  # make(plan)
  # source("2-input_fluxes.R")
 
-
 library(harrypotter)
+```
 
+```{r files}
 all = read.csv("processed/concentrations.csv")
 annual = read.csv("processed/fluxes.csv")
 summary = read.csv("processed/summary.csv")
@@ -89,7 +90,7 @@ gg_s + gg_n
 
 ```
 
-```{r all_conc, fig.height=5, fig.width=10}
+```{r all_conc, fig.height=5, fig.width=10, eval=FALSE}
 gg_n = 
   all %>% 
   mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
@@ -134,7 +135,63 @@ gg_s + gg_n
 
 ```
 
+```{r all_conc_ueq, fig.height=5, fig.width=10}
+(gg_n2 = 
+  all %>% 
+  mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
+  ggplot(aes(x = date2, color = Watershed,shape=Watershed, size=Watershed))+
+  geom_point(aes(y = NO3_ueq_L, alpha = Watershed), stroke=0.5)+
+  #geom_smooth(aes(y = NO3_ueq_L), color = "black", size=0.5, se=F)+
+  geom_path(data = annual %>% 
+              mutate(date2 = mdy(paste0("06-30-",WY))), aes(y = NO3_vol_ueq_L), color = "black", show.legend = F)+
+  ylab(expression(bold("NO"[3]*", μeq L"^{-1})))+
+  xlab("")+
+   ylim(0,150)+
+  scale_shape_manual(values = c(1,19))+
+  scale_color_manual(values = c("#5d74a5", "#a45851"))+
+  scale_alpha_manual(values = c(1, 0.5))+
+  scale_size_manual(values = c(1,1))+
+  geom_hline(yintercept = 0,size=0.3)+
+  geom_vline(xintercept = as.Date("1989-06-30"),linetype="dashed")+
+  geom_vline(xintercept = as.Date("2016-10-30"),linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = as.Date("1988-01-01"), y = 150, angle = 90,size=4, hjust = "right")+
+  annotate("text", label = "recovery", x = as.Date("2017-09-15"), y = 150, angle = 90,size=4, hjust = "right")+ 
+  theme_kp()+
+     guides(size = guide_legend(override.aes = list(size = 2)))+
 
+  NULL)
+
+(gg_s2 = 
+  all %>% 
+  mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
+  ggplot(aes(x = date2, color = Watershed,shape=Watershed, size=Watershed))+
+  geom_point(aes(y = SO4_ueq_L, alpha = Watershed), stroke=0.5)+
+  # geom_smooth(aes(y = SO4_ueq_L), color = "black", size=0.5, se=F)+
+  geom_path(data = annual %>% 
+              mutate(date2 = mdy(paste0("06-30-",WY))), aes(y = SO4_vol_ueq_L), color = "black", show.legend = F)+
+
+  #ylab("NO3-N conc, mg/L")+
+  ylab(expression(bold("SO"[4]*", μeq L"^{-1})))+
+  xlab("")+
+  scale_shape_manual(values = c(1,19))+
+  #scale_color_manual(values = PNWColors::pnw_palette("Sunset2",2))+
+  scale_color_manual(values = c("#5d74a5", "#a45851"))+
+  scale_alpha_manual(values = c(1, 0.5))+
+  scale_size_manual(values = c(1,1))+
+  geom_hline(yintercept = 0,size=0.3)+
+  geom_vline(xintercept = as.Date("1989-06-30"),linetype="dashed")+
+  geom_vline(xintercept = as.Date("2016-10-30"),linetype="dashed")+
+  annotate("text", label = "pre-treatment", x = as.Date("1988-01-01"), y = 250, angle = 90,size=4, hjust = "right")+
+  annotate("text", label = "recovery", x = as.Date("2017-09-15"), y = 250, angle = 90,size=4, hjust = "right")+ 
+  theme_kp()+
+  guides(size = guide_legend(override.aes = list(size = 2)))+
+  NULL)
+
+library(patchwork)
+
+gg_s2 + gg_n2
+
+```
 
 # INTRA-ANNUAL CONCENTRATIONS 
 
@@ -180,6 +237,52 @@ ggplot(temp,aes(x = date2, y = SO4_S, color = Watershed,shape=Watershed))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
+
+```{r concentrations2}
+all %>% 
+  dplyr::filter(Year>2013) %>% 
+  group_by(Watershed, Year, Month, Day) %>% 
+  dplyr::summarise(NO3_ueq_L = mean(NO3_ueq_L, na.rm = TRUE),
+                   SO4_ueq_L = mean(SO4_ueq_L, na.rm = TRUE)) %>% 
+  ungroup %>% 
+  dplyr::mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-")))->temp2
+
+
+ggplot(temp2,aes(x = date2, y = NO3_ueq_L, color = Watershed,shape=Watershed))+
+  geom_point(size=2,stroke=1.5)+
+  geom_path(linetype = "dashed", size=1)+
+  #scale_color_hp(discrete=TRUE,option ="Gryffindor", direction=-1)+
+  scale_color_manual(values = c("#5d74a5", "#a45851"))+
+  scale_shape_manual(values = c(1,16))+
+  geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
+  xlab("")+
+  ylab(expression(bold("NO"[3]*", μeq L"^{-1})))+
+  theme_kp()+
+  scale_x_date(date_breaks = "6 months", date_labels =  "%b %Y") +
+  annotate("text", label = "treatment stopped", x = ymd("2017-06-01"), y = 75, hjust=0, size=4)+
+  annotate("curve", x = as.Date("2017-05-01"), xend = as.Date("2016-11-15"), y = 75, yend = 70,
+           curvature = 0.2)+
+  #facet_wrap(~Watershed, scales = "free")+
+  #ylim(0,150)+
+  #scale_y_continuous(trans='log10')
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplot(temp2,aes(x = date2, y = SO4_ueq_L, color = Watershed,shape=Watershed))+
+  geom_point(size=2,stroke=1.5)+
+  geom_path(linetype = "dashed", size=1)+
+  scale_color_hp(discrete=TRUE,option ="Slytherin")+
+  scale_shape_manual(values = c(1,16))+
+  geom_vline(xintercept = unclass(as.Date("2016-11-01")),linetype = "longdash")+
+  xlab("")+
+  ylab("SO4, μeq/L")+
+  expand_limits(y=0)+
+  theme_kp()+
+  scale_x_date(date_breaks = "6 months", date_labels =  "%b %Y") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
 
 
 # deposition 
@@ -280,5 +383,25 @@ gg_ret_n =
 
 
 gg_ret_s / gg_ret_n
+```
+
+```{r}
+combined_flux %>% 
+  ggplot(aes(x = S_in, y = S_out, color = WY))+
+  geom_path()+geom_point()+
+  facet_grid(.~Watershed, scales = "free")
+
+combined_flux %>% 
+  ggplot(aes(x = N_in, y = N_out, color = WY))+
+  geom_path()+geom_point()+
+  facet_grid(.~Watershed, scales = "free")
+
+combined_flux %>% 
+  ggplot(aes(x = S_in+N_in, y = S_out+N_out, color = WY))+
+  geom_path()+geom_point()+
+  facet_grid(.~Watershed, scales = "free")
+
+
+
 ```
 

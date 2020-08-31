@@ -2,7 +2,7 @@ BBWM initial recovery
 ================
 Kaizad Patel
 
-2020-08-03
+2020-08-23
 
 # SUMMARY TABLE - ANNUAL CONCENTRATIONS
 
@@ -27,11 +27,13 @@ overall means for treatment phase
 
 ![](images/markdown/annual-1.png)<!-- -->
 
-![](images/markdown/all_conc-1.png)<!-- -->
+![](images/markdown/all_conc_ueq-1.png)<!-- -->![](images/markdown/all_conc_ueq-2.png)<!-- -->![](images/markdown/all_conc_ueq-3.png)<!-- -->
 
 # INTRA-ANNUAL CONCENTRATIONS
 
 ![](images/markdown/concentrations-1.png)<!-- -->![](images/markdown/concentrations-2.png)<!-- -->
+
+![](images/markdown/concentrations2-1.png)<!-- -->![](images/markdown/concentrations2-2.png)<!-- -->
 
 # deposition
 
@@ -40,3 +42,5 @@ overall means for treatment phase
 # RETENTION
 
 ![](images/markdown/retention-1.png)<!-- -->
+
+![](images/markdown/unnamed-chunk-3-1.png)<!-- -->![](images/markdown/unnamed-chunk-3-2.png)<!-- -->![](images/markdown/unnamed-chunk-3-3.png)<!-- -->
