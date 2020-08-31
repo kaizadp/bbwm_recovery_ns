@@ -208,3 +208,11 @@ write_csv(combined_flux,"processed/input_output.csv")
 write_csv(bbwm_dep_processed,"processed/deposition.csv")  
 
 
+combined_flux %>% 
+  filter(WY>1989 & WY < 2017) %>% 
+  group_by(Watershed) %>% 
+  dplyr::summarise(S_percret = mean(S_percret))
+
+combined_flux %>% 
+  ggplot(aes(x = WY, y = S_percret, color = Watershed))+
+  geom_point()+geom_path()
