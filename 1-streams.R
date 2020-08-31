@@ -57,13 +57,13 @@ all =
 # STEP 4: annual flux summary table -------------------- # ----
 
 summary = annual %>% 
-  dplyr::select(Watershed,period,NO3_N,SO4_S) %>% 
+  dplyr::select(Watershed,period,NO3_vol_ueq_L,SO4_vol_ueq_L) %>% 
   #gather(species,flux,NO3:SO4) %>% 
-  melt(measure.vars = c("NO3_N","SO4_S"),value.name = "conc_mg_L") %>% 
+  melt(measure.vars = c("NO3_vol_ueq_L","SO4_vol_ueq_L"),value.name = "conc_ueq_L") %>% 
   dplyr::rename(species = variable) %>% 
   group_by(Watershed,period,species) %>% 
-  dplyr::summarise(mean = mean(conc_mg_L),
-                   se = sd(conc_mg_L)/sqrt(n())) %>% 
+  dplyr::summarise(mean = mean(conc_ueq_L),
+                   se = sd(conc_ueq_L)/sqrt(n())) %>% 
   dplyr::mutate(summary = paste(round(mean,2),"\u00B1",round(se,2))),
 
 # STEP 5: annual export flux ----
