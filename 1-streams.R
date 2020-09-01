@@ -32,13 +32,14 @@ annual =
                                 levels=c("pre-treatment","first decade","second decade","third decade","recovery")),
 
 # create columns for volume-weighted
-# these will have units of mg/L
+# these will have units of ueq/L
 NO3_vol_ueq_L = round(NO3/(H2O/Area),2),
 SO4_vol_ueq_L = round(SO4/(H2O/Area),2),
 # convert ueq to mg
 # these units are mg/L
-                NO3_N = NO3_vol_ueq_L*14/1000,
-                SO4_S = SO4_vol_ueq_L*32/(2*1000)),
+#                NO3_N = NO3_vol_ueq_L*14/1000,
+#                SO4_S = SO4_vol_ueq_L*32/(2*1000)
+),
 
 # STEP 3: process concentrations dataset ----
 
@@ -50,8 +51,8 @@ all =
   dplyr::filter(Watershed %in% c("EB","WB")) %>% 
   dplyr::rename(NO3_ueq_L = `NO3 (ueq/L)`,
               SO4_ueq_L = `SO4 (ueq/L)`) %>% 
-  dplyr::mutate(NO3_N = NO3_ueq_L*14/1000, # mg/L
-                SO4_S = SO4_ueq_L*32/(2*1000)) %>% # mg/L 
+#  dplyr::mutate(NO3_N = NO3_ueq_L*14/1000, # mg/L
+#                SO4_S = SO4_ueq_L*32/(2*1000)) %>% # mg/L 
   dplyr::mutate(dates = as.Date(paste(Year, Month, Day,sep="-"))),
 
 # STEP 4: annual flux summary table -------------------- # ----

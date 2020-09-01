@@ -10,20 +10,33 @@
 source("0-bbwm_packages.R")
 
 # 1. input files ----
-bbwm_dep = read.csv("data/dep_bbwm_annual.csv")
-how_dep = read.csv("data/dep_how_annual.csv")
+#bbwm_dep = read.csv("data/dep_bbwm_annual.csv")
+howland_dep = read.csv("data/dep_how_annual.csv")
 gville_dep_seasonal = read.csv("data/dep_gville_seasonal.csv")
-
+bbwm_dep_eq = read.csv("data/bbwm_dep_eq_wy.csv")
 # clean the files 
-bbwm_dep %>% 
-  dplyr::rename(YEAR = CalYear) %>% 
-  select(YEAR, S_WET, N_WET) %>% 
-  filter(!YEAR=="2013")->
-  bbwm_dep
+bbwm_dep = 
+  bbwm_dep_eq %>% 
+  dplyr::rename(YEAR = WY,
+                NH4_eq_ha = NH4,
+                NO3_eq_ha = NO3,
+                SO4_eq_ha = SO4) %>%
+  mutate(NH4_kg_ha = NH4_eq_ha * 0.018,
+         NO3_kg_ha = NO3_eq_ha * 0.062,
+         SO4_kg_ha = SO4_eq_ha * 0.048,
+         
+         NH4N_kg_ha = NH4_kg_ha * 14/18,
+         NO3N_kg_ha = NO3_kg_ha * 14/62,
+         SO4S_kg_ha = SO4_kg_ha * 32/96,
+         
+         N_WET = NH4N_kg_ha + NO3N_kg_ha,
+         S_WET = SO4S_kg_ha) %>%
+  dplyr::select(YEAR, N_WET, S_WET) %>% 
+  filter(YEAR != 2013)
 ### NOTE: BBWM dep data are for WATER YEAR
 
 
-how_dep %>% 
+howland_dep %>% 
   filter(SITE_ID=="HOW191") %>%
   #filter(YEAR>2012) %>% 
   select(YEAR, S_WET, N_WET, S_DRY, N_DRY)->
@@ -216,3 +229,20 @@ combined_flux %>%
 combined_flux %>% 
   ggplot(aes(x = WY, y = S_percret, color = Watershed))+
   geom_point()+geom_path()
+
+
+combined_flux %>% 
+  ggplot(aes(x = WY))+
+  geom_point(aes(y = N_in), shape = 1, color = "blue")+geom_path(aes(y = N_in), color = "blue")+
+  geom_point(aes(y = N_out), shape = 16, color = "red") + geom_path(aes(y = N_out), color = "red")+
+  facet_grid(.~Watershed)
+
+
+combined_flux %>% 
+  ggplot(aes(x = WY))+
+  geom_point(aes(y = S_in), shape = 1, color = "blue")+geom_path(aes(y = S_in), color = "blue")+
+  geom_point(aes(y = S_out), shape = 16, color = "red") + geom_path(aes(y = S_out), color = "red")+
+  geom_point(aes(y = S_percret), shape = 4, color = "black") + geom_path(aes(y = S_percret), color = "black")+
+  geom_path(aes(y = S_cumret), color = "green")+
+  ylim(-50,50)+
+  facet_grid(.~Watershed)
