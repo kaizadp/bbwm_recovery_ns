@@ -1,13 +1,20 @@
-## BBWM stream recovery 
-## stream chemistry 1989-2018
+### BBWM INITIAL RECOVERY -- NITRATE AND SULFATE STORY
+### KAIZAD F. PATEL
+### DECEMBER 2019
 
-source("0-bbwm_packages.R")
+# 1-streams.R
+# stream chemistry N, S data for 1989-2018
+
+######################################## ###
+######################################## ###
+
+source("code/0-bbwm_packages.R")
 
 plan = drake_plan(
 #
 # STEP 1: load files -------------------- # ----
-bbwm_annual = read.csv ("data/bbwm_annual.csv"), ## fluxes
-bbwm_all = read_csv("data/bbwm_all.csv"), ## concentrations
+bbwm_annual = read.csv ("data/bbwm_streams_annual_ns.csv"), ## fluxes
+bbwm_all = read_csv("data/bbwm_streams_all.csv"), ## concentrations
 
 # STEP 2: process annual concentrations data ----
 # create subset with select columns
@@ -79,51 +86,12 @@ export_wy =
 
 #
 # STEP 6: exporting ALL and ANNUAL ----
-write.csv(all,"processed/concentrations.csv", row.names = FALSE),
-write.csv(annual,"processed/fluxes.csv", row.names = FALSE),
-write.csv(summary,"processed/summary.csv", row.names = FALSE),
-write.csv(export_wy,"processed/flux_export.csv", row.names = FALSE)
+write.csv(all,"data/processed/stream_allconcentrations.csv", row.names = FALSE),
+write.csv(annual,"data/processed/stream_annual.csv", row.names = FALSE),
+write.csv(summary,"data/processed/stream_summary.csv", row.names = FALSE),
+write.csv(export_wy,"data/processed/stream_exportflux.csv", row.names = FALSE)
 
 )
 
 make(plan)
 
-################################
-################################
-
-
-all %>% 
-  dplyr::mutate(doy = yday(dates))->
-  all
-
-ggplot(all[all$Watershed=="WB",], aes(x = doy, y = NO3_N, color = as.factor(Year)))+
-  geom_point()+
-  geom_path()+
-  geom_smooth()+
-  xlim(0,200)+
-  facet_wrap(Watershed~Year)
-
-      ##  
-      ##    )
-      ##    melt(id = c("Watershed","period"), measure) %>% 
-      ##  
-      ##  
-      ##  annual_melt = melt(annual, 
-      ##                     id.vars = c("Watershed", "period"),
-      ##                     measure.vars = c("NO3","SO4"))
-      ##  
-      ##  annual_melt_rmisc = summarySE(annual_melt,
-      ##                                measurevar = "value",
-      ##                                groupvars = c("variable","Watershed","period"), na.rm = TRUE)
-      ##  
-      ##  annual_melt_rmisc$summary = paste(round(annual_melt_rmisc$value,2),"\u00B1",round(annual_melt_rmisc$se,2))
-      ##  
-      ##  annual_summary = dcast(annual_melt_rmisc,
-      ##                         variable+Watershed~period,
-      ##                         value.var = "summary")
-      ##  write.csv(annual_summary, file="annual_flux_summary.csv")
-      ##  
-      ##  #
-      ##  # summary stats -------------------- # ----
-      ##  # summary stats
-      ##  

@@ -1,7 +1,17 @@
+### BBWM INITIAL RECOVERY -- NITRATE AND SULFATE STORY
+### KAIZAD F. PATEL
+### DECEMBER 2019
+
+# 3-soil.R
+# extractable soil N data from 2018 summer campaign
+
+######################################## ###
+######################################## ###
+
 source("0-bbwm_packages.R")
 
 soil = 
-  read_excel("data/soilN.xlsx", sheet = "Sheet2")
+  read_excel("data/bbwm_soil_N.xlsx", sheet = "Sheet2")
 
 soil2 = 
   soil %>% 

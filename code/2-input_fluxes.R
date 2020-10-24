@@ -6,8 +6,10 @@
 # input deposition for N and S
 # using data from BBWM and Howland
 
+######################################## ###
+######################################## ###
 
-source("0-bbwm_packages.R")
+source("code/0-bbwm_packages.R")
 
 # 1. input files ----
 #bbwm_dep = read.csv("data/dep_bbwm_annual.csv")
@@ -150,29 +152,6 @@ bbwm_dep_processed =
   dplyr::mutate(N_in = N_wet+N_dry,
                 S_in = S_wet+S_dry)
 
-### OUTPUT  
-write_csv(bbwm_dep_processed,"processed/deposition.csv")  
-
-
-# random graphs 
-ggplot(bbwm_dep_processed, aes(x = YEAR, y = S_bb))+
-  geom_path()+
-  geom_point(aes(shape=data_type), size=2, stroke=1)+
-  scale_shape_manual(values = c(1,19))+
-  ylim(0,7)+
-  ylab(expression(bold("S, kg ha"^-1*" yr"^-1)))+
-  theme_kp()
-
-ggplot(bbwm_dep_processed, aes(x = YEAR, y = N_bb))+
-  geom_path()+
-  geom_point(aes(shape=data_type), size=2, stroke=1)+
-  scale_shape_manual(values = c(1,19))+
-  ylim(0,7)+
-  ylab(expression(bold("N, kg ha"^-1*" yr"^-1)))+
-  theme_kp()
-
-
-
 #
 # 3. input-output fluxes ----
 # the input fluxes so far are ambient (EB) only
@@ -189,7 +168,7 @@ temp_flux_WB =
   dplyr::mutate(Watershed="WB")
 
 
-export_wy = read.csv("processed/flux_export.csv")
+export_wy = read.csv("data/processed/stream_exportflux.csv")
   
 combined_flux = 
   bbwm_dep_processed %>% 
@@ -217,32 +196,7 @@ combined_flux =
                 S_percret = (S_ret/S_in)*100)
   
 ### OUTPUT  ----
-write_csv(combined_flux,"processed/input_output.csv")  
-write_csv(bbwm_dep_processed,"processed/deposition.csv")  
+write_csv(combined_flux,"data/processed/fluxes_input_output.csv")  
+write_csv(bbwm_dep_processed,"data/processed/fluxes_deposition.csv")  
 
 
-combined_flux %>% 
-  filter(WY>1989 & WY < 2017) %>% 
-  group_by(Watershed) %>% 
-  dplyr::summarise(S_percret = mean(S_percret))
-
-combined_flux %>% 
-  ggplot(aes(x = WY, y = S_percret, color = Watershed))+
-  geom_point()+geom_path()
-
-
-combined_flux %>% 
-  ggplot(aes(x = WY))+
-  geom_point(aes(y = N_in), shape = 1, color = "blue")+geom_path(aes(y = N_in), color = "blue")+
-  geom_point(aes(y = N_out), shape = 16, color = "red") + geom_path(aes(y = N_out), color = "red")+
-  facet_grid(.~Watershed)
-
-
-combined_flux %>% 
-  ggplot(aes(x = WY))+
-  geom_point(aes(y = S_in), shape = 1, color = "blue")+geom_path(aes(y = S_in), color = "blue")+
-  geom_point(aes(y = S_out), shape = 16, color = "red") + geom_path(aes(y = S_out), color = "red")+
-  geom_point(aes(y = S_percret), shape = 4, color = "black") + geom_path(aes(y = S_percret), color = "black")+
-  geom_path(aes(y = S_cumret), color = "green")+
-  ylim(-50,50)+
-  facet_grid(.~Watershed)
