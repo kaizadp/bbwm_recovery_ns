@@ -10,6 +10,7 @@ Data are archived at the Environmental Data Initiative, doi: XXX-XXX
 
 ## Directory structure
 
+```
 home
 |---- code/
 |        |---- 0-bbwm_packages.R
@@ -47,5 +48,5 @@ home
 |
 |---- bbwm_recovery_ns.Rproj
 |---- Readme.md
-
+```
 
