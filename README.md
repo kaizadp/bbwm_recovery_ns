@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/220157320.svg)](https://zenodo.org/badge/latestdoi/220157320)
 ## Contrasting stream nitrate and sulfate response to recovery from experimental watershed acidification
 ----
 
