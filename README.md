@@ -1,6 +1,8 @@
 ## Contrasting stream nitrate and sulfate response to recovery from experimental watershed acidification
-Kaizad F. Patel
 ----
+
+Kaizad F. Patel, Ivan J. Fernandez, Sarah J. Nelson, Jacob Malcomb, Stephen A. Norton
+
 
 This repository contains data files and processing/visualization scripts for the published article, Patel et al. 2020 Biogeochemistry doi: [10.1007/s10533-020-00711-5](https://doi.org/10.1007/s10533-020-00711-5)  
 
